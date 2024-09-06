@@ -332,7 +332,7 @@ if( !$allow_addnews ) {
 		
 		}
 	
-		if ($config['create_catalog']) $catalog_url = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( trim( $title ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) ); else $catalog_url = "";
+		if ($config['create_catalog']) $catalog_url = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( trim( $title ) ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) ); else $catalog_url = "";
 
 		if ( $user_group[$member_id['user_group']]['disable_news_captcha'] AND $member_id['news_num'] >= $user_group[$member_id['user_group']]['disable_news_captcha'] ) {
 
@@ -347,7 +347,7 @@ if( !$allow_addnews ) {
 	
 				$sec_code = 1;
 				$sec_code_session = false;
-				
+	
 				if ($_POST['g-recaptcha-response']) {
 				
 					$reCaptcha = new ReCaptcha($config['recaptcha_private_key']);
@@ -359,7 +359,7 @@ if( !$allow_addnews ) {
 							$stop .= "<li>" . $lang['recaptcha_fail'] . "</li>";
 	
 				    }
-
+	
 				} else $stop .= "<li>" . $lang['recaptcha_fail'] . "</li>";
 	
 			} elseif( $_REQUEST['sec_code'] != $_SESSION['sec_code_session'] OR !$_SESSION['sec_code_session'] ) $stop .= "<li>" . $lang['recaptcha_fail'] . "</li>";
@@ -1007,7 +1007,7 @@ function preview(){";
 		$.post(dle_root + 'engine/ajax/controller.php?mod=find_relates', { title: title, mode: 1, user_hash: '{$dle_login_hash}' }, function(data){
 	
 			HideLoading('');
-			
+	
 			$('#related_news').html(data);
 	
 		});

@@ -76,565 +76,501 @@ function set_cookie($name, $value, $expires) {
 }
 
 function check_login($username, $md5_password, $post = true, $check_log = false) {
-    global $db, $member_id, $user_group, $lang, $_IP, $_TIME, $config;
+	global $member_id, $db, $user_group, $lang, $_IP, $_TIME, $config;
 
-    if ($username == "" OR $md5_password == "") return false;
-    
-    $result = false;
-    
-    if ($post) {
-        $stmt = $db->prepare("SELECT * FROM " . USERPREFIX . "_users WHERE name = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $member_id = $stmt->get_result()->fetch_assoc();
-        
-        if (isset($member_id['user_id']) AND $member_id['user_id'] AND $member_id['password'] AND $member_id['banned'] != 'yes' AND $user_group[$member_id['user_group']]['allow_admin']) {
-            if ($member_id['password'] == md5(md5($md5_password))) {
-                $result = true;
-            }
-        }
-        
-        if (!$result) {
-            $stmt = $db->prepare("INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) VALUES (?, ?, ?, '89', '')");
-            $stmt->bind_param("sss", $username, $_TIME, $_IP);
-            $stmt->execute();
-        }
-    } else {
-        $stmt = $db->prepare("SELECT * FROM " . USERPREFIX . "_users WHERE user_id = ?");
-        $stmt->bind_param("i", $username);
-        $stmt->execute();
-        $member_id = $stmt->get_result()->fetch_assoc();
-        
-        if ($member_id['user_id'] AND $member_id['password'] AND md5($member_id['password']) == $md5_password AND $user_group[$member_id['user_group']]['allow_admin'] AND $member_id['banned'] != 'yes') {
-            $result = true;
-        } else {
-            $stmt = $db->prepare("INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) values (?, ?, ?, '90', '')");
-            $stmt->bind_param("sss", $member_id['name'], $_TIME, $_IP);
-            $stmt->execute();
-        }
-    }
+	if( $username == "" OR $md5_password == "" ) return false;
+	
+	$result = false;
+	
+	if( $post ) {
+		
+		$username = $db->safesql( $username );
+		if( strlen($md5_password) > 72 ) $md5_password = substr($md5_password, 0, 72);
 
-    if ($result) {
-        if (!allowed_ip($member_id['allowed_ip']) OR !allowed_ip($config['admin_allowed_ip'])) {
-            $member_id = array();
-            $result = false;
+		if ($config['auth_metod']) {
 
-            if (isset($_COOKIE) and is_array($_COOKIE) and count($_COOKIE)) {
-                foreach ($_COOKIE as $key => $value) {
-                    set_cookie($key, '', 0);
-                }
-            }
+			if ( preg_match( "/[\||\'|\<|\>|\"|\!|\?|\$|\/|\\\|\&\~\*\+]/", $username) ) return false;	
+			$where_name = "email='{$username}'";
+	
+		} else {
 
-            session_unset();
-            session_destroy();
-            
-            msg("info", $lang['index_msge'], $lang['ip_block']);
-        }
-    }
+			if ( preg_match( "/[\||\'|\<|\>|\"|\!|\?|\$|\@|\/|\\\|\&\~\*\+]/", $username) ) return false;
+			$where_name = "name='{$username}'";
+	
+		}
 
-    if (!$result) {
-        if ($config['login_log']) {
-            $stmt = $db->prepare("INSERT INTO " . PREFIX . "_login_log (ip, count, date) VALUES (?, '1', ?) ON DUPLICATE KEY UPDATE count=count+1, date=?");
-            $stmt->bind_param("sss", $_IP, time(), time());
-            $stmt->execute();
-        }
-    } else {
-        if ($check_log AND !isset($_SESSION['check_log'])) {
-            if ($post) {
-                $a_id = 82;
-                $extr = "";
-            } else {
-                $a_id = 86;
-                if (isset($_SERVER['HTTP_REFERER']) AND $_SERVER['HTTP_REFERER']) {
-                    $extr = $db->safesql(htmlspecialchars($_SERVER['HTTP_REFERER'], ENT_QUOTES));
-                } else {
-                    $extr = "Direct DLE Adminpanel";
-                }
-            }
+		$member_id = $db->super_query( "SELECT * FROM " . USERPREFIX . "_users WHERE {$where_name}" );
+		
+		if( isset($member_id['user_id']) AND $member_id['user_id'] AND $member_id['password'] AND $member_id['banned'] != 'yes' AND $user_group[$member_id['user_group']]['allow_admin'] ) {
+			
+			if( is_md5hash( $member_id['password'] ) ) {
+				
+				if($member_id['password'] == md5( md5($md5_password) ) ) {
+					$result = true;
+				}
+				
+			} else {
+				
+				if(password_verify($md5_password, $member_id['password'] ) ) {
+					$result = true;
+				}
+				
+			}
+			
+		}
+		
+		if( !$result ) {
 
-            $stmt = $db->prepare("INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) values (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $db->safesql($member_id['name']), $_TIME, $_IP, $a_id, $extr);
-            $stmt->execute();
-            
-            $_SESSION['check_log'] = 1;
-        }
-    }
+			$member_id = array ();
+	
+			$username = $db->safesql(trim( htmlspecialchars( stripslashes($username), ENT_QUOTES, $config['charset'])));
+	
+			if( version_compare($config['version_id'], "9.3", '>') ) $db->query( "INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) values ('".$username."', '{$_TIME}', '{$_IP}', '89', '')" );
 
-    return $result;
+		}
+
+	} else {
+		
+		$username = intval( $username );
+		
+		$member_id = $db->super_query( "SELECT * FROM " . USERPREFIX . "_users WHERE user_id='{$username}'" );
+		
+		if( $member_id['user_id'] AND $member_id['password'] AND md5($member_id['password']) == $md5_password AND $user_group[$member_id['user_group']]['allow_admin'] AND $member_id['banned'] != 'yes' ) {
+
+			$result = true;
+
+		} else {
+
+			$username = $db->safesql(trim( htmlspecialchars( stripslashes($member_id['name']), ENT_QUOTES, $config['charset'])));
+
+			$member_id = array ();
+	
+			if( version_compare($config['version_id'], "9.3", '>') ) $db->query( "INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) values ('".$username."', '{$_TIME}', '{$_IP}', '90', '')" );
+
+		}
+	
+	}
+
+	if( $result ) {
+		
+		if( !allowed_ip( $member_id['allowed_ip'] ) OR !allowed_ip( $config['admin_allowed_ip'] ) ) {
+			
+			$member_id = array ();
+			$result = false;
+
+			if (isset($_COOKIE) and is_array($_COOKIE) and count($_COOKIE)) {
+				foreach ($_COOKIE as $key => $value) {
+					set_cookie($key, '', 0);
+				}
+			}
+
+			session_unset();
+			session_destroy();
+			
+			msg( "info", $lang['index_msge'], $lang['ip_block'] );
+		
+		}
+	}
+
+	if ( !$result ) { 
+
+		if ($config['login_log']) $db->query( "INSERT INTO " . PREFIX . "_login_log (ip, count, date) VALUES('{$_IP}', '1', '".time()."') ON DUPLICATE KEY UPDATE count=count+1, date='".time()."'" );
+
+	} else {
+
+		if ( $check_log AND !isset($_SESSION['check_log']) ) {
+
+			if( $post ) { $a_id = 82; $extr =""; } else { $a_id = 86; if (isset($_SERVER['HTTP_REFERER']) AND $_SERVER['HTTP_REFERER']) $extr = $db->safesql(htmlspecialchars($_SERVER['HTTP_REFERER'], ENT_QUOTES)); else $extr = "Direct DLE Adminpanel"; }
+
+			if( version_compare($config['version_id'], "9.3", '>') )  $db->query( "INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) values ('".$db->safesql($member_id['name'])."', '{$_TIME}', '{$_IP}', '{$a_id}', '{$extr}')" );
+			
+			$_SESSION['check_log'] = 1;
+		}
+
+	}
+
+	return $result;
 }
 
-function deletenewsbyid($id) {
-    global $config, $db;
-    
-    $id = intval($id);
 
-    $stmt = $db->prepare("SELECT user_id FROM " . PREFIX . "_post_extras WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
+function deletenewsbyid( $id ) {
+	global $config, $db;
+	
+	$id = intval($id);
+	DLEFiles::init();
+	
+	$row = $db->super_query( "SELECT user_id FROM " . PREFIX . "_post_extras WHERE news_id = '{$id}'" );
+	
+	$db->query( "UPDATE " . USERPREFIX . "_users SET news_num=news_num-1 WHERE user_id='{$row['user_id']}'" );
+	
+	$db->query( "DELETE FROM " . PREFIX . "_post WHERE id='{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_post_extras WHERE news_id='{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_post_extras_cats WHERE news_id='{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_poll WHERE news_id='{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_poll_log WHERE news_id='{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_post_log WHERE news_id='{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_post_pass WHERE news_id='{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_tags WHERE news_id = '{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_xfsearch WHERE news_id = '{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_logs WHERE news_id = '{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_subscribe WHERE news_id='{$id}'");
 
-    $stmt = $db->prepare("UPDATE " . USERPREFIX . "_users SET news_num=news_num-1 WHERE user_id = ?");
-    $stmt->bind_param("i", $row['user_id']);
-    $stmt->execute();
+	deletecommentsbynewsid( $id );
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_post WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+	$row = $db->super_query( "SELECT images  FROM " . PREFIX . "_images WHERE news_id = '{$id}'" );
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_post_extras WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+	if( isset($row['images']) AND $row['images']) {
+		
+		$listimages = explode( "|||", $row['images'] );
+	
+		foreach ( $listimages as $dataimage ) {
+			
+			$dataimage = get_uploaded_image_info($dataimage);
+		
+			$query = $db->safesql( $dataimage->path );
+			$row = $db->super_query("SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE short_story LIKE '%{$query}%' OR full_story LIKE '%{$query}%' OR xfields LIKE '%{$query}%'");
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_post_extras_cats WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+			if( isset($row['count']) AND $row['count'] ) {
+				continue;
+			}
+			
+			if( $dataimage->remote ) $disk = DLEFiles::FindDriver($dataimage->url);
+			else $disk = 0;
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_poll WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+			DLEFiles::Delete( "posts/" . $dataimage->path, $disk );
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_poll_log WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+			if ($dataimage->hidpi) {
+				DLEFiles::Delete("posts/{$dataimage->folder}/{$dataimage->hidpi}", $disk);
+			}
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_post_log WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+			if( $dataimage->thumb ) {
+				
+				DLEFiles::Delete( "posts/{$dataimage->folder}/thumbs/{$dataimage->name}", $disk );
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_post_pass WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+				if ($dataimage->hidpi) {
+					DLEFiles::Delete("posts/{$dataimage->folder}/thumbs/{$dataimage->hidpi}", $disk);
+				}
+				
+			}
+			
+			if( $dataimage->medium ) {
+				
+				DLEFiles::Delete( "posts/{$dataimage->folder}/medium/{$dataimage->name}", $disk );
+				
+				if ($dataimage->hidpi) {
+					DLEFiles::Delete("posts/{$dataimage->folder}/medium/{$dataimage->hidpi}", $disk);
+				}
+			}
+						
+		}
+	
+		$db->query( "DELETE FROM " . PREFIX . "_images WHERE news_id = '{$id}'" );
+	
+	}
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_tags WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+	$db->query( "SELECT * FROM " . PREFIX . "_files WHERE news_id = '{$id}'" );
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_xfsearch WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+	while ( $row = $db->get_row() ) {
+		
+		if( trim($row['onserver']) == ".htaccess") die("Hacking attempt!");
+		
+		if( $row['is_public'] ) $uploaded_path = 'public_files/'; else $uploaded_path = 'files/';
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_logs WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+		DLEFiles::Delete( $uploaded_path.$row['onserver'], $row['driver'] );
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_subscribe WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+	}
 
-    deletecommentsbynewsid($id);
+	$db->query( "DELETE FROM " . PREFIX . "_files WHERE news_id = '{$id}'" );
 
-    $stmt = $db->prepare("SELECT images FROM " . PREFIX . "_images WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
+	$sql_result = $db->query( "SELECT user_id, favorites FROM " . USERPREFIX . "_users WHERE favorites LIKE '%{$id}%'" );
+	
+	while ( $row = $db->get_row($sql_result) ) {
+		
+		$temp_fav = explode( ",", $row['favorites'] );
+		$new_fav = array();
+		
+		foreach ( $temp_fav as $value ) {
+			$value = intval($value);
+			if($value != $id ) $new_fav[] = $value;
+		}
+		
+		if(count($new_fav)) $new_fav = $db->safesql(implode(",", $new_fav));
+		else $new_fav = "";
+		
+		$db->query( "UPDATE " . USERPREFIX . "_users SET favorites='{$new_fav}' WHERE user_id='{$row['user_id']}'" );
 
-    if (isset($row['images']) AND $row['images']) {
-        $listimages = explode("|||", $row['images']);
-
-        foreach ($listimages as $dataimage) {
-            $dataimage = get_uploaded_image_info($dataimage);
-
-            $stmt = $db->prepare("SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE short_story LIKE ? OR full_story LIKE ? OR xfields LIKE ?");
-            $stmt->bind_param("sss", "%{$dataimage->path}%", "%{$dataimage->path}%", "%{$dataimage->path}%");
-            $stmt->execute();
-            $row = $stmt->get_result()->fetch_assoc();
-
-            if (isset($row['count']) AND $row['count']) {
-                continue;
-            }
-
-            if ($dataimage->remote) {
-                $disk = DLEFiles::FindDriver($dataimage->url);
-            } else {
-                $disk = 0;
-            }
-
-            DLEFiles::Delete("posts/" . $dataimage->path, $disk);
-
-            if ($dataimage->hidpi) {
-                DLEFiles::Delete("posts/{$dataimage->folder}/{$dataimage->hidpi}", $disk);
-            }
-
-            if ($dataimage->thumb) {
-                DLEFiles::Delete("posts/{$dataimage->folder}/thumbs/{$dataimage->name}", $disk);
-
-                if ($dataimage->hidpi) {
-                    DLEFiles::Delete("posts/{$dataimage->folder}/thumbs/{$dataimage->hidpi}", $disk);
-                }
-            }
-
-            if ($dataimage->medium) {
-                DLEFiles::Delete("posts/{$dataimage->folder}/medium/{$dataimage->name}", $disk);
-
-                if ($dataimage->hidpi) {
-                    DLEFiles::Delete("posts/{$dataimage->folder}/medium/{$dataimage->hidpi}", $disk);
-                }
-            }
-        }
-
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_images WHERE news_id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-    }
-
-    $stmt = $db->prepare("SELECT * FROM " . PREFIX . "_files WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        if (trim($row['onserver']) == ".htaccess") die("Hacking attempt!");
-
-        if ($row['is_public']) {
-            $uploaded_path = 'public_files/';
-        } else {
-            $uploaded_path = 'files/';
-        }
-
-        DLEFiles::Delete($uploaded_path . $row['onserver'], $row['driver']);
-    }
-
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_files WHERE news_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-
-    $stmt = $db->prepare("SELECT user_id, favorites FROM " . USERPREFIX . "_users WHERE favorites LIKE ?");
-    $stmt->bind_param("s", "%{$id}%");
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        $temp_fav = explode(",", $row['favorites']);
-        $new_fav = array();
-
-        foreach ($temp_fav as $value) {
-            $value = intval($value);
-            if ($value != $id) $new_fav[] = $value;
-        }
-
-        if (count($new_fav)) {
-            $new_fav = $db->safesql(implode(",", $new_fav));
-        } else {
-            $new_fav = "";
-        }
-
-        $stmt = $db->prepare("UPDATE " . USERPREFIX . "_users SET favorites = ? WHERE user_id = ?");
-        $stmt->bind_param("si", $new_fav, $row['user_id']);
-        $stmt->execute();
-    }
+	}
 }
 
-function deleteuserbyid($id) {
-    global $config, $db;
-    
-    $id = intval($id);
+function deleteuserbyid( $id ) {
+	global $config, $db;
+	
+	$id = intval($id);
 
-    $stmt = $db->prepare("SELECT user_id, name, foto FROM " . USERPREFIX . "_users WHERE user_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
+	$row = $db->super_query("SELECT user_id, name, foto FROM " . USERPREFIX . "_users WHERE user_id='{$id}'");
 
-    if (isset($row['user_id']) AND $row['user_id']) {
-        if ($row['foto'] AND count(explode("@", $row['foto'])) != 2) {
-            $url = @parse_url($row['foto']);
-            $row['foto'] = basename($url['path']);
+	if (isset($row['user_id']) AND $row['user_id']) {
 
-            $driver = DLEFiles::getDefaultStorage();
-            $config['avatar_remote'] = intval($config['avatar_remote']);
-            if ($config['avatar_remote'] > -1) $driver = $config['avatar_remote'];
+		if($row['foto'] AND count(explode("@", $row['foto'])) != 2) {
 
-            DLEFiles::init($driver);
-            DLEFiles::Delete("fotos/" . totranslit($row['foto']));
-        }
+			$url = @parse_url($row['foto']);
+			$row['foto'] = basename($url['path']);
 
-        $stmt = $db->prepare("DELETE FROM " . USERPREFIX . "_pm WHERE user_from = ? AND folder = 'outbox'");
-        $stmt->bind_param("s", $row['name']);
-        $stmt->execute();
+			$driver = DLEFiles::getDefaultStorage();
+			$config['avatar_remote'] = intval($config['avatar_remote']);
+			if ($config['avatar_remote'] > -1)  $driver = $config['avatar_remote'];
 
-        $stmt = $db->prepare("DELETE FROM " . USERPREFIX . "_pm WHERE user = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
+			DLEFiles::init($driver);
+			DLEFiles::Delete("fotos/" . totranslit($row['foto']));
 
-        $stmt = $db->prepare("DELETE FROM " . USERPREFIX . "_social_login WHERE uid = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
+		}
 
-        $stmt = $db->prepare("DELETE FROM " . USERPREFIX . "_banned WHERE users_id = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
+		$db->query("DELETE FROM " . USERPREFIX . "_pm WHERE user_from = '{$row['name']}' AND folder = 'outbox'");
+		$db->query("DELETE FROM " . USERPREFIX . "_pm WHERE user='{$row['user_id']}'");
+		$db->query("DELETE FROM " . USERPREFIX . "_social_login WHERE uid='{$row['user_id']}'");
+		$db->query("DELETE FROM " . USERPREFIX . "_banned WHERE users_id='{$row['user_id']}'");
+		$db->query("DELETE FROM " . USERPREFIX . "_ignore_list WHERE user='{$row['user_id']}' OR user_from='{$row['name']}'");
+		$db->query("DELETE FROM " . PREFIX . "_notice WHERE user_id = '{$row['user_id']}'");
+		$db->query("DELETE FROM " . PREFIX . "_subscribe WHERE user_id='{$row['user_id']}'");
+		$db->query("DELETE FROM " . PREFIX . "_logs WHERE `member` = '{$row['name']}'");
+		$db->query("DELETE FROM " . PREFIX . "_comment_rating_log WHERE `member` = '{$row['name']}'");
+		$db->query("DELETE FROM " . PREFIX . "_vote_result WHERE name = '{$row['name']}'");
+		$db->query("DELETE FROM " . PREFIX . "_poll_log WHERE `member` = '{$row['user_id']}'");
+		$db->query("DELETE FROM " . USERPREFIX . "_users WHERE user_id='{$row['user_id']}'");
+		$db->query("DELETE FROM " . USERPREFIX . "_users_delete WHERE user_id='{$row['user_id']}'");
 
-        $stmt = $db->prepare("DELETE FROM " . USERPREFIX . "_ignore_list WHERE user = ? OR user_from = ?");
-        $stmt->bind_param("is", $row['user_id'], $row['name']);
-        $stmt->execute();
+	}
 
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_notice WHERE user_id = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
-
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_subscribe WHERE user_id = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
-
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_logs WHERE `member` = ?");
-        $stmt->bind_param("s", $row['name']);
-        $stmt->execute();
-
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_comment_rating_log WHERE `member` = ?");
-        $stmt->bind_param("s", $row['name']);
-        $stmt->execute();
-
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_vote_result WHERE name = ?");
-        $stmt->bind_param("s", $row['name']);
-        $stmt->execute();
-
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_poll_log WHERE `member` = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
-
-        $stmt = $db->prepare("DELETE FROM " . USERPREFIX . "_users WHERE user_id = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
-
-        $stmt = $db->prepare("DELETE FROM " . USERPREFIX . "_users_delete WHERE user_id = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
-    }
 }
 
-function deletecomments($id) {
-    global $config, $db;
-    
-    $id = intval($id);
+function deletecomments( $id ) {
+	global $config, $db;
+	
+	$id = intval($id);
+	DLEFiles::init();
+	
+	$row = $db->super_query( "SELECT id, post_id, user_id, is_register, approve FROM " . PREFIX . "_comments WHERE id = '{$id}'" );
+	
+	$db->query( "DELETE FROM " . PREFIX . "_comments WHERE id = '{$id}'" );
+	$db->query( "DELETE FROM " . PREFIX . "_comment_rating_log WHERE c_id = '{$id}'" );	
 
-    $stmt = $db->prepare("SELECT id, post_id, user_id, is_register, approve FROM " . PREFIX . "_comments WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
+	if( $row['is_register'] ) {
+		$db->query( "UPDATE " . USERPREFIX . "_users SET comm_num=comm_num-1 WHERE user_id ='{$row['user_id']}'" );
+	}
+	
+	if($row['approve']) $db->query( "UPDATE " . PREFIX . "_post SET comm_num=comm_num-1 WHERE id='{$row['post_id']}'" );
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_comments WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+	$db->query( "SELECT id, name, driver FROM " . PREFIX . "_comments_files WHERE c_id = '{$id}'" );
+	
+	while ( $row = $db->get_row() ) {
+		
+		$dataimage = get_uploaded_image_info( $row['name'] );
+		
+		DLEFiles::Delete( "posts/" . $dataimage->path, $row['driver'] );
+		
+		if( $dataimage->thumb ) {
+			
+			DLEFiles::Delete( "posts/{$dataimage->folder}/thumbs/{$dataimage->name}", $row['driver'] );
+			
+		}
+			
+	}
+	
+	$db->query( "DELETE FROM " . PREFIX . "_comments_files WHERE c_id = '{$id}'" );
+	
+	if ( $config['tree_comments'] ) {
 
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_comment_rating_log WHERE c_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
+		$sql_result = $db->query( "SELECT id FROM " . PREFIX . "_comments WHERE parent = '{$id}'" );
+	
+		while ( $row = $db->get_row( $sql_result ) ) {
+			deletecomments( $row['id'] );
+		}
 
-    if ($row['is_register']) {
-        $stmt = $db->prepare("UPDATE " . USERPREFIX . "_users SET comm_num=comm_num-1 WHERE user_id = ?");
-        $stmt->bind_param("i", $row['user_id']);
-        $stmt->execute();
-    }
+	}
 
-    if ($row['approve']) {
-        $stmt = $db->prepare("UPDATE " . PREFIX . "_post SET comm_num=comm_num-1 WHERE id = ?");
-        $stmt->bind_param("i", $row['post_id']);
-        $stmt->execute();
-    }
-
-    $stmt = $db->prepare("SELECT id, name, driver FROM " . PREFIX . "_comments_files WHERE c_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        $dataimage = get_uploaded_image_info($row['name']);
-
-        DLEFiles::Delete("posts/" . $dataimage->path, $row['driver']);
-
-        if ($dataimage->thumb) {
-            DLEFiles::Delete("posts/{$dataimage->folder}/thumbs/{$dataimage->name}", $row['driver']);
-        }
-    }
-
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_comments_files WHERE c_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-
-    if ($config['tree_comments']) {
-        $stmt = $db->prepare("SELECT id FROM " . PREFIX . "_comments WHERE parent = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        while ($row = $result->fetch_assoc()) {
-            deletecomments($row['id']);
-        }
-    }
 }
 
-function deletecommentsbynewsid($id) {
-    global $config, $db;
-    
-    $id = intval($id);
+function deletecommentsbynewsid( $id ) {
+	global $config, $db;
+	
+	$id = intval($id);
+	DLEFiles::init();
+	
+	$result = $db->query( "SELECT id FROM " . PREFIX . "_comments WHERE post_id='{$id}'" );
+	
+	while ( $row = $db->get_array( $result ) ) {
+		
+		$db->query( "DELETE FROM " . PREFIX . "_comment_rating_log WHERE c_id = '{$row['id']}'" );
 
-    $stmt = $db->prepare("SELECT id FROM " . PREFIX . "_comments WHERE post_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+		$sub_result = $db->query( "SELECT id, name, driver FROM " . PREFIX . "_comments_files WHERE c_id = '{$row['id']}'" );
+		
+		while ( $file = $db->get_row( $sub_result ) ) {
+			
+			$dataimage = get_uploaded_image_info( $file['name'] );
+			
+			DLEFiles::Delete( "posts/" . $dataimage->path, $file['driver'] );
+			
+			if( $dataimage->thumb ) {
+				
+				DLEFiles::Delete( "posts/{$dataimage->folder}/thumbs/{$dataimage->name}", $file['driver'] );
+				
+			}
 
-    while ($row = $result->fetch_assoc()) {
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_comment_rating_log WHERE c_id = ?");
-        $stmt->bind_param("i", $row['id']);
-        $stmt->execute();
+		}
+		
+		$db->query( "DELETE FROM " . PREFIX . "_comments_files WHERE c_id = '{$row['id']}'" );
+	
+	}
+	
+	$result = $db->query( "SELECT COUNT(*) as count, user_id FROM " . PREFIX . "_comments WHERE post_id='{$id}' AND is_register='1' GROUP BY user_id" );
+	
+	while ( $row = $db->get_array( $result ) ) {
+		
+		$db->query( "UPDATE " . USERPREFIX . "_users SET comm_num=comm_num-{$row['count']} WHERE user_id='{$row['user_id']}'" );
+	
+	}
+	
+	$db->query( "DELETE FROM " . PREFIX . "_comments WHERE post_id='{$id}'" );
 
-        $stmt = $db->prepare("SELECT id, name, driver FROM " . PREFIX . "_comments_files WHERE c_id = ?");
-        $stmt->bind_param("i", $row['id']);
-        $stmt->execute();
-        $sub_result = $stmt->get_result();
 
-        while ($file = $sub_result->fetch_assoc()) {
-            $dataimage = get_uploaded_image_info($file['name']);
-
-            DLEFiles::Delete("posts/" . $dataimage->path, $file['driver']);
-
-            if ($dataimage->thumb) {
-                DLEFiles::Delete("posts/{$dataimage->folder}/thumbs/{$dataimage->name}", $file['driver']);
-            }
-        }
-
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_comments_files WHERE c_id = ?");
-        $stmt->bind_param("i", $row['id']);
-        $stmt->execute();
-    }
-
-    $stmt = $db->prepare("SELECT COUNT(*) as count, user_id FROM " . PREFIX . "_comments WHERE post_id = ? AND is_register = '1' GROUP BY user_id");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        $stmt = $db->prepare("UPDATE " . USERPREFIX . "_users SET comm_num=comm_num-? WHERE user_id = ?");
-        $stmt->bind_param("ii", $row['count'], $row['user_id']);
-        $stmt->execute();
-    }
-
-    $stmt = $db->prepare("DELETE FROM " . PREFIX . "_comments WHERE post_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
 }
 
-function deletecommentsbyuserid($id, $ip = false) {
-    global $db;
-    
-    $id = intval($id);
+function deletecommentsbyuserid( $id, $ip = false ) {
+	global $db;
+	
+	$id = intval($id);
+	
+	if($ip) {
+		$ip = $db->safesql($ip);
+		$result = $db->query( "SELECT id FROM " . PREFIX . "_comments WHERE ip='{$ip}' AND is_register='0'" );
+	} else {
+		$result = $db->query( "SELECT id FROM " . PREFIX . "_comments WHERE user_id='{$id}' AND is_register='1'" );
+	}
+	
+	while ( $row = $db->get_array( $result ) ) {
+		deletecomments($row['id']);
+	}
 
-    if ($ip) {
-        $ip = $db->safesql($ip);
-        $stmt = $db->prepare("SELECT id FROM " . PREFIX . "_comments WHERE ip = ? AND is_register = '0'");
-        $stmt->bind_param("s", $ip);
-    } else {
-        $stmt = $db->prepare("SELECT id FROM " . PREFIX . "_comments WHERE user_id = ? AND is_register = '1'");
-        $stmt->bind_param("i", $id);
-    }
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    while ($row = $result->fetch_assoc()) {
-        deletecomments($row['id']);
-    }
 }
 
 function formatsize($file_size) {
-    if (!$file_size OR $file_size < 1) return '0 b';
-    
+	
+	if( !$file_size OR $file_size < 1) return '0 b';
+	
     $prefix = array("b", "Kb", "Mb", "Gb", "Tb");
     $exp = floor(log($file_size, 1024)) | 0;
-    
-    $file_size = round($file_size / (pow(1024, $exp)), 2) . ' ' . $prefix[$exp];
-    $file_size = str_replace(",", ".", $file_size);
-    
+
+    $file_size = round($file_size / (pow(1024, $exp)), 2).' '.$prefix[$exp];
+	$file_size = str_replace(",", ".", $file_size);
+
     return $file_size;
+
 }
 
 function CheckCanGzip() {
-    if (headers_sent() || connection_aborted() || !function_exists('ob_gzhandler') || ini_get('zlib.output_compression')) return 0;
-    
-    if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip') !== false) return "x-gzip";
-    if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false) return "gzip";
-    
-    return 0;
+	
+	if( headers_sent() || connection_aborted() || ! function_exists( 'ob_gzhandler' ) || ini_get( 'zlib.output_compression' ) ) return 0;
+	
+	if( isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'x-gzip' ) !== false ) return "x-gzip";
+	if( isset($_SERVER['HTTP_ACCEPT_ENCODING']) AND strpos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip' ) !== false ) return "gzip";
+	
+	return 0;
 }
 
 function GzipOut() {
-    $ENCODING = CheckCanGzip();
-    
-    if ($ENCODING) {
-        $Contents = ob_get_contents();
-        ob_end_clean();
-        
-        header("Content-Encoding: $ENCODING");
-        
-        $Contents = gzencode($Contents, 1, FORCE_GZIP);
-        echo $Contents;
-        
-        exit();
-    } else {
-        ob_end_flush();
-        exit();
-    }
+	
+	$ENCODING = CheckCanGzip();
+	
+	if( $ENCODING ) {
+		$Contents = ob_get_contents();
+		ob_end_clean();
+		
+		header( "Content-Encoding: $ENCODING" );
+		
+		$Contents = gzencode( $Contents, 1, FORCE_GZIP );
+		echo $Contents;
+		
+		exit();
+	} else {
+		
+		ob_end_flush(); 
+		exit();
+	}
 }
 
 function allowed_ip($ip_array) {
-    $ip_array = trim($ip_array);
-    
-    $_IP = get_ip();
-    
-    if (!$ip_array) {
-        return true;
-    }
-    
-    if (strpos($_IP, ":") === false) {
-        $delimiter = ".";
-    } else {
-        $delimiter = ":";
-    }
-    
-    $db_ip_split = explode($delimiter, $_IP);
-    $ip_lenght = count($db_ip_split);
-    
-    $ip_array = explode("|", $ip_array);
-    
-    foreach ($ip_array as $ip) {
-        $ip = trim($ip);
-        
-        if ($ip == $_IP) {
-            return true;
-        } elseif (count(explode('/', $ip)) == 2) {
-            if (maskmatch($_IP, $ip)) return true;
-        } else {
-            $ip_check_matches = 0;
-            $this_ip_split = explode($delimiter, $ip);
-            
-            for ($i_i = 0; $i_i < $ip_lenght; $i_i++) {
-                if ($this_ip_split[$i_i] == $db_ip_split[$i_i] OR $this_ip_split[$i_i] == '*') {
-                    $ip_check_matches += 1;
-                }
-            }
-            
-            if ($ip_check_matches == $ip_lenght) return true;
-        }
-    }
-    
-    return false;
+	
+	$ip_array = trim( $ip_array );
+
+	$_IP = get_ip();
+
+	if( !$ip_array ) {
+		return true;
+	}
+	
+	if( strpos($_IP, ":") === false ) {
+		$delimiter = ".";
+	} else $delimiter = ":";
+	
+	$db_ip_split = explode( $delimiter, $_IP );
+	$ip_lenght = count($db_ip_split);
+	
+	$ip_array = explode( "|", $ip_array );
+	
+	foreach ( $ip_array as $ip ) {
+		
+		$ip = trim( $ip );
+		
+		if( $ip == $_IP ) {
+			
+			return true;
+		
+		} elseif( count(explode ('/', $ip)) == 2 ) {
+				
+			if( maskmatch($_IP, $ip) ) return true;
+				
+		} else {
+			
+			$ip_check_matches = 0;
+			$this_ip_split = explode( $delimiter, $ip );
+			
+			for($i_i = 0; $i_i < $ip_lenght; $i_i ++) {
+				if( $this_ip_split[$i_i] == $db_ip_split[$i_i] OR $this_ip_split[$i_i] == '*' ) {
+					$ip_check_matches += 1;
+				}
+			
+			}
+			
+			if( $ip_check_matches == $ip_lenght ) return true;
+		}
+	
+	}
+	
+	return false;
 }
 
+
 function maskmatch($IP, $CIDR) {
-    list($address, $netmask) = explode('/', $CIDR, 2);
-    
-    if (strpos($IP, ".") !== false AND strpos($CIDR, ".") !== false) {
-        return (ip2long($IP) & ~((1 << (32 - $netmask)) - 1)) == ip2long($address);
-    } elseif (strpos($IP, ":") !== false AND strpos($CIDR, ":") !== false) {
+	
+    list ($address, $netmask) = explode('/', $CIDR, 2);
+
+	if( strpos($IP, ".") !== false AND strpos($CIDR, ".") !== false ) {
+		
+		return ( ip2long($IP) & ~((1 << (32 - $netmask)) - 1) ) == ip2long ($address);
+	
+	} elseif( strpos($IP, ":") !== false AND strpos($CIDR, ":") !== false ) {
+		
         if (!((extension_loaded('sockets') && defined('AF_INET6')) || @inet_pton('::1'))) {
-            return false;
+          return false;
         }
-        
+		
         $bytesAddr = unpack('n*', @inet_pton($address));
         $bytesTest = unpack('n*', @inet_pton($IP));
-        
+
         if (!$bytesAddr || !$bytesTest) {
             return false;
         }
-        
+
         for ($i = 1, $ceil = ceil($netmask / 16); $i <= $ceil; ++$i) {
             $left = $netmask - 16 * ($i - 1);
             $left = ($left <= 16) ? $left : 16;
@@ -643,61 +579,65 @@ function maskmatch($IP, $CIDR) {
                 return false;
             }
         }
-        
-        return true;
-    }
-    
-    return false;
+		
+		return true;
+		
+	}
+	
+	return false;
+
 }
 
 function msg($type, $title, $text, $back = false) {
-    global $lang;
-    
-    $buttons = array();
-    
-    if (is_array($back)) {
-        $bc = 1;
-        
-        foreach ($back as $key => $value) {
-            if ($bc == 1) $color = "teal";
-            elseif ($bc == 2) $color = "slate-600";
-            elseif ($bc == 3) $color = "brown-600";
-            else $color = "primary-600";
-            
-            if ($value == $lang['add_s_5']) $target = " target=\"_blank\"";
-            else $target = "";
-            
-            $buttons[] = "<a class=\"btn btn-sm bg-{$color} btn-raised position-left\" href=\"{$key}\"{$target}>{$value}</a>";
-            
-            $bc++;
-            
-            if ($bc > 4) $bc = 1;
-        }
-    } elseif ($back) {
-        $buttons[] = "<a class=\"btn btn-sm bg-teal btn-raised position-left\" href=\"{$back}\">{$lang['func_msg']}</a>";
-    }
-    
-    if (count($buttons)) {
-        $back = "<div class=\"panel-footer\"><div class=\"text-center\">" . implode('', $buttons) . "</div></div>";
-    } else $back = "";
-    
-    if ($title == "error") $title = $lang['addnews_error'];
-    
-    echoheader("<i class=\"fa fa-comment-o position-left\"></i><span class=\"text-semibold\">{$lang['header_box_title']}</span>", $title);
-    
-    if ($type == "error") {
-        $type = "alert-danger";
-    } elseif ($type == "warning") {
-        $type = "alert-warning";
-    } elseif ($type == "success") {
-        $type = "alert-success";
-    } else $type = "alert-info";
-    
-    if (is_array($title)) {
-        $title = end($title);
-    }
-    
-    echo <<<HTML
+	global $lang;
+	
+	$buttons = array();
+	
+	if(is_array( $back )) {
+		$bc = 1;
+		
+		foreach ($back as $key => $value) {
+			
+			if($bc == 1) $color="teal";
+			elseif($bc == 2) $color="slate-600";
+			elseif($bc == 3) $color="brown-600";
+			else $color="primary-600";
+			
+			if( $value == $lang['add_s_5'] ) $target = " target=\"_blank\"";
+			else $target="";
+			
+			$buttons[] = "<a class=\"btn btn-sm bg-{$color} btn-raised position-left\" href=\"{$key}\"{$target}>{$value}</a>";
+			
+			$bc++;
+			
+			if($bc > 4) $bc = 1;
+		}
+	} elseif( $back ) {
+		$buttons[] = "<a class=\"btn btn-sm bg-teal btn-raised position-left\" href=\"{$back}\">{$lang['func_msg']}</a>";
+	}
+	
+	if(count($buttons) ) {
+		$back = "<div class=\"panel-footer\"><div class=\"text-center\">".implode('', $buttons)."</div></div>";
+	} else $back ="";
+	
+	
+	if ($title == "error") $title = $lang['addnews_error'];
+	
+	echoheader( "<i class=\"fa fa-comment-o position-left\"></i><span class=\"text-semibold\">{$lang['header_box_title']}</span>", $title );
+
+	if($type == "error") {
+		$type = "alert-danger";
+	} elseif ( $type == "warning" ) {
+		$type = "alert-warning";
+	} elseif ( $type == "success" ) {
+		$type = "alert-success";
+	} else $type = "alert-info";
+	
+	if( is_array( $title ) ) {
+		$title = end($title);
+	}
+
+	echo <<<HTML
 <div class="alert {$type} alert-styled-left alert-arrow-left alert-component message_box">
   <h4>{$title}</h4>
   <div class="panel-body">
@@ -710,142 +650,154 @@ function msg($type, $title, $text, $back = false) {
 	{$back}
 </div>
 HTML;
-    
-    echofooter();
-    die();
+	
+	echofooter();
+	die();
 }
 
 function echoheader($header_title, $header_subtitle) {
-    global $skin_header, $skin_footer, $skin_not_logged_header, $member_id, $user_group, $js_array, $css_array, $config, $lang, $is_loged_in, $mod, $action, $langdate, $db, $dle_login_hash;
-    
-    if (!is_array($header_subtitle)) $header_subtitle = array('' => $header_subtitle);
-    
-    $breadcrumb = array("<li><a href=\"?mod=main\"><i class=\"fa fa-home position-left\"></i>{$lang['skin_main']}</a></li>");
-    
-    foreach ($header_subtitle as $key => $value) {
-        if ($key) {
-            $breadcrumb[] = "<li><a href=\"{$key}\">{$value}</a></li>";
-        } else {
-            $breadcrumb[] = "<li class=\"active\">{$value}</li>";
-        }
-    }
-    
-    $breadcrumb = implode('', $breadcrumb);
-    
-    include_once(DLEPlugins::Check(ENGINE_DIR . '/skins/default.skin.php'));
-    
-    $js = build_js($js_array);
-    $css = build_css($css_array);
-    
-    $skin_header = str_replace("{js_files}", $js, $skin_header);
-    $skin_header = str_replace("{css_files}", $css, $skin_header);
-    $skin_not_logged_header = str_replace("{js_files}", $js, $skin_not_logged_header);
-    $skin_not_logged_header = str_replace("{css_files}", $css, $skin_not_logged_header);
-    
-    if ($is_loged_in) echo $skin_header;
-    else echo $skin_not_logged_header;
+	global $skin_header, $skin_footer, $skin_not_logged_header, $member_id, $user_group, $js_array, $css_array, $config, $lang, $is_loged_in, $mod, $action, $langdate, $db, $dle_login_hash;
+
+	if( !is_array( $header_subtitle )) $header_subtitle = array ( '' => $header_subtitle);
+	
+	$breadcrumb = array( "<li><a href=\"?mod=main\"><i class=\"fa fa-home position-left\"></i>{$lang['skin_main']}</a></li>" );
+
+	foreach ($header_subtitle as $key => $value) {
+		
+		if($key) {
+			$breadcrumb[] = "<li><a href=\"{$key}\">{$value}</a></li>";
+		} else {
+			$breadcrumb[] = "<li class=\"active\">{$value}</li>";
+		}
+	}
+
+	$breadcrumb = implode('', $breadcrumb);
+
+	include_once (DLEPlugins::Check(ENGINE_DIR . '/skins/default.skin.php'));
+	
+	$js = build_js($js_array);
+	$css = build_css($css_array);
+	
+	$skin_header = str_replace( "{js_files}", $js, $skin_header );
+	$skin_header = str_replace( "{css_files}", $css, $skin_header );
+	$skin_not_logged_header = str_replace( "{js_files}", $js, $skin_not_logged_header );
+	$skin_not_logged_header = str_replace( "{css_files}", $css, $skin_not_logged_header );
+	
+	if( $is_loged_in ) echo $skin_header;
+	else echo $skin_not_logged_header;
 }
 
 function echofooter() {
-    global $is_loged_in, $skin_footer, $skin_not_logged_footer;
-    
-    if ($is_loged_in) echo $skin_footer;
-    else echo $skin_not_logged_footer;
+	global $is_loged_in, $skin_footer, $skin_not_logged_footer;
+
+	if( $is_loged_in ) echo $skin_footer;
+	else echo $skin_not_logged_footer;
+
 }
 
 function listdir($dir) {
-    if (is_dir($dir)) {
-        $current_dir = @opendir($dir);
-        
-        if ($current_dir !== false) {
-            while ($entryname = readdir($current_dir)) {
-                if (is_dir($dir . "/" . $entryname) AND ($entryname != "." AND $entryname != "..")) {
-                    listdir($dir . "/" . $entryname);
-                } elseif ($entryname != "." AND $entryname != "..") {
-                    @unlink($dir . "/" . $entryname);
-                }
-            }
-            @closedir($current_dir);
-            @rmdir($dir);
-        }
-    }
+	
+	if( is_dir($dir) ) {
+
+		$current_dir = @opendir( $dir );
+		
+		if($current_dir !== false ) {
+			while ( $entryname = readdir( $current_dir ) ) {
+				if( is_dir( $dir."/".$entryname ) AND ($entryname != "." AND $entryname != "..") ) {
+					listdir( $dir."/".$entryname );
+				} elseif( $entryname != "." AND $entryname != ".." ) {
+					@unlink( $dir."/".$entryname );
+				}
+			}
+			@closedir( $current_dir );
+			@rmdir( $dir );
+		}
+
+	}
+
 }
 
-function totranslit($var, $lower = true, $punkt = true, $translit = true) {
-    global $langtranslit;
+function totranslit($var, $lower = true, $punkt = true, $translit = true ) {
+	global $langtranslit;
+	
+	if ( !is_string($var) ) return "";
+
+	$bads = array( '!', '*', '\'', '(', ')', ';', ':', '@', '&', '=', '+', '$', ',', '/', '?', '#', '[', ']', '%', '\\', '"', '<', '>', '^', '{', '}', '|', '`', '.php' );
+
+	$var = html_entity_decode($var, ENT_QUOTES | ENT_HTML5, 'utf-8');
+
+	$var = strip_tags( $var );
+	$var = str_replace(chr(0), '', $var);
+	
+	if ( $lower ) {
+		$var = dle_strtolower($var);	
+	}
+	
+	$var = str_replace( array( "\r\n", "\r", "\n" ), ' ', $var );
+	$var = preg_replace( "/\s+/u", "-", $var );
+
+	if ( !$punkt ) {
+		$bads[] = '.';
+	}
+	
+	$var = str_ireplace( $bads, '', $var );
+	
+	if( $translit ) {
+		
+		if (is_array($langtranslit) AND count($langtranslit) ) {
+			$var = strtr($var, $langtranslit);
+		}
+		
+		if ( $punkt ) {
+			
+			$var = preg_replace( "/[^a-z0-9\_\-.]+/mi", '', $var );
+			$var = preg_replace( '#[.]+#i', '.', $var );
+			
+		} else $var = preg_replace( "/[^a-z0-9\_\-]+/mi", '', $var );
+	
+	}
+	
+	$var = str_ireplace( ".php", ".ppp", $var );
+	$var = preg_replace( '/\-+/', '-', $var );
+	
+	if( dle_strlen( $var ) > 150 ) {
+		
+		$var = dle_substr( $var, 0, 150 );
+		
+		if( ($temp_max = dle_strrpos( $var, '-' )) ) $var = dle_substr( $var, 0, $temp_max );
+	
+	}
     
-    if (!is_string($var)) return "";
-    
-    $bads = array('!', '*', '\'', '(', ')', ';', ':', '@', '&', '=', '+', '$', ',', '/', '?', '#', '[', ']', '%', '\\', '"', '<', '>', '^', '{', '}', '|', '`', '.php');
-    
-    $var = html_entity_decode($var, ENT_QUOTES | ENT_HTML5, 'utf-8');
-    
-    $var = strip_tags($var);
-    $var = str_replace(chr(0), '', $var);
-    
-    if ($lower) {
-        $var = dle_strtolower($var);
-    }
-    
-    $var = str_replace(array("\r\n", "\r", "\n"), ' ', $var);
-    $var = preg_replace("/\\s+/u", "-", $var);
-    
-    if (!$punkt) {
-        $bads[] = '.';
-    }
-    
-    $var = str_ireplace($bads, '', $var);
-    
-    if ($translit) {
-        if (is_array($langtranslit) AND count($langtranslit)) {
-            $var = strtr($var, $langtranslit);
-        }
-        
-        if ($punkt) {
-            $var = preg_replace("/[^a-z0-9\\_\\-.]+/mi", '', $var);
-            $var = preg_replace('#[.]+#i', '.', $var);
-        } else $var = preg_replace("/[^a-z0-9\\_\\-]+/mi", '', $var);
-    }
-    
-    $var = str_ireplace(".php", ".ppp", $var);
-    $var = preg_replace('/\\-+/', '-', $var);
-    
-    if (dle_strlen($var) > 150) {
-        $var = dle_substr($var, 0, 150);
-        
-        if (($temp_max = dle_strrpos($var, '-'))) $var = dle_substr($var, 0, $temp_max);
-    }
-    
-    $var = trim($var, '-');
-    $var = trim($var);
-    
-    return $var;
+	$var = trim( $var, '-' );
+    $var = trim( $var );
+	
+	return $var;
 }
 
-function timezone_list() {
-    static $timezones = null;
-    
-    if ($timezones === null) {
-        $timezones = [];
-        $offsets = [];
-        $now = new DateTime('now', new DateTimeZone('UTC'));
-        
-        foreach (DateTimeZone::listIdentifiers() as $timezone) {
-            $now->setTimezone(new DateTimeZone($timezone));
-            $offsets[] = $offset = $now->getOffset();
-            $timezones[$timezone] = '(' . format_GMT_offset($offset) . ') ' . format_timezone_name($timezone);
-        }
-        
-        array_multisort($offsets, $timezones);
-    }
-    
-    return $timezones;
+function timezone_list(){
+	static $timezones = null;
+
+	if ($timezones === null) {
+		$timezones = [];
+		$offsets = [];
+		$now = new DateTime('now', new DateTimeZone('UTC'));
+
+		foreach (DateTimeZone::listIdentifiers() as $timezone) {
+			$now->setTimezone(new DateTimeZone($timezone));
+			$offsets[] = $offset = $now->getOffset();
+			$timezones[$timezone] = '(' . format_GMT_offset($offset) . ') ' . format_timezone_name($timezone);
+		}
+
+		array_multisort($offsets, $timezones);
+	}
+
+	return $timezones;
 }
 
 function format_GMT_offset($offset) {
-    $hours = intval($offset / 3600);
-    $minutes = abs(intval($offset % 3600 / 60));
-    return 'GMT' . ($offset !== false ? sprintf('%+03d:%02d', $hours, $minutes) : '');
+	$hours = intval($offset / 3600);
+	$minutes = abs(intval($offset % 3600 / 60));
+	return 'GMT' . ($offset !== false ? sprintf('%+03d:%02d', $hours, $minutes) : '');
 }
 
 function format_timezone_name($name) {
@@ -1112,7 +1064,7 @@ function dle_cache($prefix, $cache_id = false, $member_prefix = false) {
 	if( ! $cache_id ) {
 		
 		$key = $prefix;
-		
+	
 	} else {
 		
 		$cache_id = md5( $cache_id );
@@ -1563,669 +1515,698 @@ function get_folder_list( $folder = 'language' ) {
 }
 
 function get_groups($id = false) {
-    global $db;
-    
-    $returnstring = "";
-    
-    $stmt = $db->prepare("SELECT id, group_name FROM " . USERPREFIX . "_usergroups");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    while ($group = $result->fetch_assoc()) {
-        $returnstring .= '<option value="' . $group['id'] . '" ';
-        
-        if (is_array($id)) {
-            foreach ($id as $element) {
-                if ($element == $group['id']) $returnstring .= 'SELECTED';
-            }
-        } elseif ($id and $id == $group['id']) $returnstring .= 'SELECTED';
-        
-        $returnstring .= ">" . $group['group_name'] . "</option>\n";
-    }
-    
-    return $returnstring;
-}
+	global $user_group;
+	
+	$returnstring = "";
+	
+	foreach ( $user_group as $group ) {
+		$returnstring .= '<option value="' . $group['id'] . '" ';
+		
+		if( is_array( $id ) ) {
+			foreach ( $id as $element ) {
+				if( $element == $group['id'] ) $returnstring .= 'SELECTED';
+			}
+		} elseif( $id and $id == $group['id'] ) $returnstring .= 'SELECTED';
+		
+		$returnstring .= ">" . $group['group_name'] . "</option>\n";
+	}
+	
+	return $returnstring;
 
+}
 function permload($id) {
-    global $db;
-    
-    if (!$id) return;
-    
-    $data = array();
-    
-    $groups = explode("|", $id);
-    foreach ($groups as $group) {
-        list($groupid, $groupvalue) = explode(":", $group);
-        $data[$groupid][1] = ($groupvalue == 1) ? "selected" : "";
-        $data[$groupid][2] = ($groupvalue == 2) ? "selected" : "";
-        $data[$groupid][3] = ($groupvalue == 3) ? "selected" : "";
-    }
-    return $data;
+	
+	if( $id == "" ) return;
+	
+	$data = array ();
+	
+	$groups = explode( "|", $id );
+	foreach ( $groups as $group ) {
+		list ( $groupid, $groupvalue ) = explode( ":", $group );
+		$data[$groupid][1] = ($groupvalue == 1) ? "selected" : "";
+		$data[$groupid][2] = ($groupvalue == 2) ? "selected" : "";
+		$data[$groupid][3] = ($groupvalue == 3) ? "selected" : "";
+	}
+	return $data;
 }
 
 function check_xss() {
-    global $db;
-    
-    if (isset($_GET['mod']) AND isset($_GET['action']) AND $_GET['mod'] == "editnews" AND $_GET['action'] == "list") return;
-    if (isset($_GET['mod']) AND isset($_GET['action']) AND $_GET['mod'] == "static" AND $_GET['action'] == "list") return;
-    if (isset($_GET['mod']) AND ($_GET['mod'] == "tagscloud" OR $_GET['mod'] == "links" OR $_GET['mod'] == "redirects"  OR $_GET['mod'] == "metatags") ) return;
-    
-    $url = html_entity_decode(urldecode($_SERVER['QUERY_STRING']), ENT_QUOTES, 'ISO-8859-1');
-    
-    $url = str_replace("\\", "/", $url);
-    
-    if ($url) {
-       
-        if ((strpos($url, '<') !== false) || (strpos($url, '>') !== false) || (strpos($url, '"') !== false) || (strpos($url, './') !== false) || (strpos($url, '../') !== false) || (strpos($url, '\'') !== false) || (strpos($url, '.php') !== false)) {
-           
-            header("HTTP/1.1 403 Forbidden");
-            die("Hacking attempt!");
-        }
-    }
-    
-    $url = html_entity_decode(urldecode($_SERVER['REQUEST_URI']), ENT_QUOTES, 'ISO-8859-1');
-    $url = str_replace("\\", "/", $url);
-    
-    if ($url) {
-       
-        if ((strpos($url, '<') !== false) || (strpos($url, '>') !== false) || (strpos($url, '"') !== false) || (strpos($url, '\'') !== false)) {
-            header("HTTP/1.1 403 Forbidden");
-            die("Hacking attempt!");
-        }
-    }
+
+	if (isset($_GET['mod']) AND isset($_GET['action']) AND $_GET['mod'] == "editnews" AND $_GET['action'] == "list") return;
+	if (isset($_GET['mod']) AND isset($_GET['action']) AND $_GET['mod'] == "static" AND $_GET['action'] == "list") return;
+	if (isset($_GET['mod']) AND ($_GET['mod'] == "tagscloud" OR $_GET['mod'] == "links" OR $_GET['mod'] == "redirects"  OR $_GET['mod'] == "metatags") ) return;
+	
+	$url = html_entity_decode( urldecode( $_SERVER['QUERY_STRING'] ), ENT_QUOTES, 'ISO-8859-1' );
+
+	$url = str_replace( "\\", "/", $url );
+
+	if( $url ) {
+		
+		if( (strpos( $url, '<' ) !== false) || (strpos( $url, '>' ) !== false) || (strpos( $url, '"' ) !== false) || (strpos( $url, './' ) !== false) || (strpos( $url, '../' ) !== false) || (strpos( $url, '\'' ) !== false) || (strpos( $url, '.php' ) !== false) ) {
+
+			header( "HTTP/1.1 403 Forbidden" );
+			die( "Hacking attempt!" );
+		
+		}
+	
+	}
+	
+	$url = html_entity_decode( urldecode( $_SERVER['REQUEST_URI'] ), ENT_QUOTES, 'ISO-8859-1' );
+	$url = str_replace( "\\", "/", $url );
+	
+	if( $url ) {
+		
+		if( (strpos( $url, '<' ) !== false) || (strpos( $url, '>' ) !== false) || (strpos( $url, '"' ) !== false) || (strpos( $url, '\'' ) !== false) ) {
+			header( "HTTP/1.1 403 Forbidden" );
+			die( "Hacking attempt!" );
+		
+		}
+	
+	}
+
 }
 
 function clean_url($url) {
-    global $db;
-    
-    if (!$url) return;
-    
-    $url = str_replace("http://", "", $url);
-    $url = str_replace("https://", "", $url);
-    if (strtolower(substr($url, 0, 4)) == 'www.') $url = substr($url, 4);
-    $url = explode('/', $url);
-    $url = reset($url);
-    $url = explode(':', $url);
-    $url = reset($url);
-    
-    return $url;
+	
+	if( $url == '' ) return;
+	
+	$url = str_replace( "http://", "", $url );
+	$url = str_replace( "https://", "", $url );
+	if( strtolower( substr( $url, 0, 4 ) ) == 'www.' ) $url = substr( $url, 4 );
+	$url = explode( '/', $url );
+	$url = reset( $url );
+	$url = explode( ':', $url );
+	$url = reset( $url );
+	
+	return $url;
 }
 
 function get_url($id) {
-    global $db, $cat_info;
-    
-    $cat_id = false;
-    
-    if (!$id) return "";
-    
-    $id = explode(",", $id);
-    
-    foreach ($id as $val) {
-       
-        $val = intval($val);
-        
-        if (isset($cat_info[$val]['id']) AND $cat_info[$val]['id'] AND $val) {
-            $cat_id = $val;
-            break;
-        }
-    }
-    
-    if (!$cat_id) return "";
-    
-    $id = $cat_id;
-    
-    $parent_id = $cat_info[$id]['parentid'];
-    
-    $url = $cat_info[$id]['alt_name'];
-    
-    while ($parent_id) {
-       
-        if (!$cat_info[$parent_id]['id']) {
-            break;
-        }
-        
-        $url = $cat_info[$parent_id]['alt_name'] . "/" . $url;
-        
-        $parent_id = $cat_info[$parent_id]['parentid'];
-        
-        if ($parent_id) {
-            if ($cat_info[$parent_id]['parentid'] == $cat_info[$parent_id]['id']) break;
-        }
-    }
-    
-    return $url;
+	
+	global $cat_info;
+
+	$cat_id = false;
+	
+	if( !$id ) return "";
+
+	$id = explode (",", $id);
+
+	foreach ($id as $val) {
+		
+		$val = intval($val);
+		
+		if ( isset($cat_info[$val]['id']) AND $cat_info[$val]['id'] AND $val ) {
+			$cat_id = $val;
+			break;
+		}
+		
+	}
+	
+	if( !$cat_id ) return "";
+	
+	$id = $cat_id;
+	
+	$parent_id = $cat_info[$id]['parentid'];
+	
+	$url = $cat_info[$id]['alt_name'];
+	
+	while ( $parent_id ) {
+		
+		if( !$cat_info[$parent_id]['id'] ) {
+			break;
+		}
+		
+		$url = $cat_info[$parent_id]['alt_name'] . "/" . $url;
+		
+		$parent_id = $cat_info[$parent_id]['parentid'];
+
+		if($parent_id) {	
+			if( $cat_info[$parent_id]['parentid'] == $cat_info[$parent_id]['id'] ) break;
+		}
+	
+	}
+	
+	return $url;
 }
 
 function convert_unicode($t, $to = '') {
-    return $t;
+// deprecated
+	return $t;
 }
 
 function check_netz($ip1, $ip2) {
-   
-    if (strpos($ip1, ":") === false) {
-        $delimiter = ".";
-    } else $delimiter = ":";
-    
-    $ip1 = explode($delimiter, $ip1);
-    $ip2 = explode($delimiter, $ip2);
-    
-    if ($ip1[0] != $ip2[0]) return false;
-    if ($ip1[1] != $ip2[1]) return false;
-    
-    if ($delimiter == ":") {
-        if ($ip1[2] != $ip2[2]) return false;
-        if ($ip1[3] != $ip2[3]) return false;
-    }
-    
-    return true;
+	
+	if( strpos($ip1, ":") === false ) {
+		$delimiter = ".";
+	} else $delimiter = ":";
+	
+	$ip1 = explode( $delimiter, $ip1 );
+	$ip2 = explode( $delimiter, $ip2 );
+	
+	if( $ip1[0] != $ip2[0] ) return false;
+	if( $ip1[1] != $ip2[1] ) return false;
+	
+	if($delimiter == ":") {
+		if( $ip1[2] != $ip2[2] ) return false;
+		if( $ip1[3] != $ip2[3] ) return false;
+	}
+	
+	return true;
+
 }
 
 function compare_filter($a, $b) {
-   
-    $a = explode("|", $a);
-    $b = explode("|", $b);
-    
-    if ($a[1] == $b[1]) return 0;
-    
-    return strcasecmp($a[1], $b[1]);
+	
+	$a = explode( "|", $a );
+	$b = explode( "|", $b );
+	
+	if( $a[1] == $b[1] ) return 0;
+	
+	return strcasecmp( $a[1], $b[1] );
+
 }
 
 function build_js($js) {
-    global $config;
-    
-    $js_array = array();
-    $i = 0;
-    $defer = "";
-    
-    if ($config['js_min']) {
-       
-        $js_array[] = "<script src=\"engine/classes/min/index.php?charset={$config['charset']}&amp;g=admin&amp;v={$config['cache_id']}\"></script>";
-        
-        if (count($js)) $js_array[] = "<script src=\"engine/classes/min/index.php?charset={$config['charset']}&amp;f=" . implode(",", $js) . "&amp;v={$config['cache_id']}\" defer></script>";
-        
-        return implode("\n", $js_array);
-    } else {
-       
-        $default_array = array(
-            'engine/skins/javascripts/application.js',
-        );
-        
-        if (count($js)) $js = array_merge($default_array, $js); else $js = $default_array;
-        
-        foreach ($js as $value) {
-           
-            if ($i > 0) $defer = " defer";
-            
-            $js_array[] = "<script src=\"{$value}?v={$config['cache_id']}\"{$defer}></script>";
-            
-            $i++;
-        }
-        
-        return implode("\n", $js_array);
-    }
+	global $config;
+
+	$js_array = array();
+	$i=0;
+	$defer = "";
+	
+	if ($config['js_min']) {
+
+		$js_array[] = "<script src=\"engine/classes/min/index.php?charset={$config['charset']}&amp;g=admin&amp;v={$config['cache_id']}\"></script>";
+
+		if ( count($js) ) $js_array[] = "<script src=\"engine/classes/min/index.php?charset={$config['charset']}&amp;f=".implode(",", $js)."&amp;v={$config['cache_id']}\" defer></script>";
+
+		return implode("\n", $js_array);
+
+	} else {
+
+		$default_array = array (
+			'engine/skins/javascripts/application.js',
+		);
+
+		if ( count($js) ) $js = array_merge($default_array, $js); else $js = $default_array;
+
+		foreach ($js as $value) {
+			
+			if($i > 0) $defer =" defer";
+			
+			$js_array[] = "<script src=\"{$value}?v={$config['cache_id']}\"{$defer}></script>";
+			
+			$i++;
+		
+		}
+
+		return implode("\n", $js_array);
+	}
+
 }
+
 
 function build_css($css) {
-    global $config, $lang;
-    
-    if ($lang['direction'] == 'rtl') $rtl_prefix = '_rtl'; else $rtl_prefix = '';
-    
-    $default_array = array(
-        "engine/skins/fonts/fontawesome/styles.min.css",
-        "engine/skins/stylesheets/application{$rtl_prefix}.css"
-    );
-    
-    $css_array = array();
-    
-    if (count($css)) $css = array_merge($default_array, $css); else $css = $default_array;
-    
-    if ($config['js_min']) {
-       
-        return "<link href=\"engine/classes/min/index.php?charset={$config['charset']}&amp;f=" . implode(",", $css) . "&amp;v={$config['cache_id']}\" rel=\"stylesheet\" type=\"text/css\">";
-    } else {
-       
-        foreach ($css as $value) {
-           
-            $css_array[] = "<link href=\"{$value}?v={$config['cache_id']}\" rel=\"stylesheet\" type=\"text/css\">";
-        }
-        
-        return implode("\n", $css_array);
-    }
+	global $config, $lang;
+
+	if($lang['direction'] == 'rtl') $rtl_prefix ='_rtl'; else $rtl_prefix = '';
+
+	$default_array = array (
+		"engine/skins/fonts/fontawesome/styles.min.css",
+		"engine/skins/stylesheets/application{$rtl_prefix}.css"
+	);
+	
+	$css_array = array();
+
+	if ( count($css) ) $css = array_merge($default_array, $css); else $css = $default_array;
+
+	if ($config['js_min']) {
+
+		return "<link href=\"engine/classes/min/index.php?charset={$config['charset']}&amp;f=".implode(",", $css)."&amp;v={$config['cache_id']}\" rel=\"stylesheet\" type=\"text/css\">";
+
+	} else {
+
+		foreach ($css as $value) {
+		
+			$css_array[] = "<link href=\"{$value}?v={$config['cache_id']}\" rel=\"stylesheet\" type=\"text/css\">";
+		
+		}
+
+		return implode("\n", $css_array);
+	}
+
 }
 
-function dle_strlen($value, $charset = "utf-8") {
+function dle_strlen($value, $charset = "utf-8" ) {
+
+	if( function_exists( 'mb_strlen' ) ) {
+		return mb_strlen( $value, $charset );
+	} elseif( function_exists( 'iconv_strlen' ) ) {
+		return iconv_strlen($value, $charset);
+	}
+
+	return strlen($value);
+}
+
+function dle_substr($str, $start, $length, $charset = "utf-8" ) {
+
+	if( function_exists( 'mb_substr' ) ) {
+		return mb_substr( $str, $start, $length, $charset );
+	
+	} elseif( function_exists( 'iconv_substr' ) ) {
+		return iconv_substr($str, $start, $length, $charset);
+	}
+
+	return substr($str, $start, $length);
+
+}
+
+function dle_strrpos($str, $needle, $charset = "utf-8" ) {
+
+	if( function_exists( 'mb_strrpos' ) ) {
+		return mb_strrpos( $str, $needle, 0, $charset );
+	
+	} elseif( function_exists( 'iconv_strrpos' ) ) {
+		return iconv_strrpos($str, $needle, $charset);
+	}
+
+	return strrpos($str, $needle);
+
+}
+
+function dle_strpos($str, $needle, $charset = "utf-8" ) {
+
+	if( function_exists( 'mb_strpos' ) ) {
+		return mb_strpos( $str, $needle, 0, $charset );
+	} elseif( function_exists( 'iconv_strrpos' ) ) {
+		return iconv_strpos($str, $needle, 0, $charset);
+	}
+
+	return strpos($str, $needle);
+
+}
+
+function dle_strtolower($str, $charset = "utf-8" ) {
+
+	if( function_exists( 'mb_strtolower' ) ) {
+		return mb_strtolower( $str, $charset );
+	}
+
+	return strtolower($str);
+
+}
+
+function check_allow_login($ip, $max ) {
+	global $db, $config;
+
+	$config['login_ban_timeout'] = intval($config['login_ban_timeout']);
+	
+	$max = intval($max);
+	
+	if( $max < 2 ) $max = 2;
+	
+	$block_date = time()-($config['login_ban_timeout'] * 60);
+
+	$row = $db->super_query( "SELECT * FROM " . PREFIX . "_login_log WHERE ip='{$ip}'" );
+
+	if ( isset($row['count']) AND $row['count'] AND $row['date'] < $block_date ) {
+		$db->query( "DELETE FROM " . PREFIX . "_login_log WHERE ip = '{$ip}'" );
+		return true;
+	}
+
+	if ( isset($row['count']) AND $row['count'] >= $max AND $row['date'] > $block_date ) return false;
+	else return true;
+
+}
+
+function detect_encoding($string) {  
+  static $list = array('utf-8', 'windows-1251');
    
-    if (function_exists('mb_strlen')) {
-        return mb_strlen($value, $charset);
-    } elseif (function_exists('iconv_strlen')) {
-        return iconv_strlen($value, $charset);
-    }
-    
-    return strlen($value);
-}
+  foreach ($list as $item) {
 
-function dle_substr($str, $start, $length, $charset = "utf-8") {
-   
-    if (function_exists('mb_substr')) {
-        return mb_substr($str, $start, $length, $charset);
-    } elseif (function_exists('iconv_substr')) {
-        return iconv_substr($str, $start, $length, $charset);
-    }
-    
-    return substr($str, $start, $length);
-}
+	if( function_exists( 'mb_convert_encoding' ) ) {
 
-function dle_strrpos($str, $needle, $charset = "utf-8") {
-   
-    if (function_exists('mb_strrpos')) {
-        return mb_strrpos($str, $needle, 0, $charset);
-    } elseif (function_exists('iconv_strrpos')) {
-        return iconv_strrpos($str, $needle, $charset);
-    }
-    
-    return strrpos($str, $needle);
-}
+		$sample = mb_convert_encoding( $string, $item, $item );
 
-function dle_strpos($str, $needle, $charset = "utf-8") {
-   
-    if (function_exists('mb_strpos')) {
-        return mb_strpos($str, $needle, 0, $charset);
-    } elseif (function_exists('iconv_strrpos')) {
-        return iconv_strpos($str, $needle, 0, $charset);
-    }
-    
-    return strpos($str, $needle);
-}
+	} elseif( function_exists( 'iconv' ) ) {
+	
+		$sample = iconv($item, $item, $string);
+	
+	}
 
-function dle_strtolower($str, $charset = "utf-8") {
-   
-    if (function_exists('mb_strtolower')) {
-        return mb_strtolower($str, $charset);
-    }
-    
-    return strtolower($str);
-}
+	if (md5($sample) == md5($string)) return $item;
+   }
 
-function check_allow_login($ip, $max) {
-    global $db, $config;
-    
-    $config['login_ban_timeout'] = intval($config['login_ban_timeout']);
-    
-    $max = intval($max);
-    
-    if ($max < 2) $max = 2;
-    
-    $block_date = time() - ($config['login_ban_timeout'] * 60);
-    
-    $stmt = $db->prepare("SELECT * FROM " . PREFIX . "_login_log WHERE ip = ?");
-    $stmt->bind_param("s", $ip);
-    $stmt->execute();
-    $row = $stmt->get_result()->fetch_assoc();
-    
-    if (isset($row['count']) AND $row['count'] AND $row['date'] < $block_date) {
-        $stmt = $db->prepare("DELETE FROM " . PREFIX . "_login_log WHERE ip = ?");
-        $stmt->bind_param("s", $ip);
-        $stmt->execute();
-        return true;
-    }
-    
-    if (isset($row['count']) AND $row['count'] >= $max AND $row['date'] > $block_date) return false;
-    else return true;
-}
-
-function detect_encoding($string) {
-    static $list = array('utf-8', 'windows-1251');
-    
-    foreach ($list as $item) {
-       
-        if (function_exists('mb_convert_encoding')) {
-           
-            $sample = mb_convert_encoding($string, $item, $item);
-        } elseif (function_exists('iconv')) {
-           
-            $sample = iconv($item, $item, $string);
-        }
-        
-        if (md5($sample) == md5($string)) return $item;
-    }
-    
-    return null;
+   return null;
 }
 
 function get_ip() {
-    global $config;
-    
-    if (isset($config['own_ip']) AND $config['own_ip']) $ip = $_SERVER[$config['own_ip']]; else $ip = $_SERVER['REMOTE_ADDR'];
-    
-    $temp_ip = explode(",", $ip);
-    
-    if (count($temp_ip) > 1) $ip = trim($temp_ip[0]);
-    
-    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
-        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
-    }
-    
-    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
-        return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
-    }
-    
-    return 'not detected';
+	global $config;
+	
+	if (isset($config['own_ip']) AND $config['own_ip']) $ip = $_SERVER[$config['own_ip']]; else $ip = $_SERVER['REMOTE_ADDR'];
+
+	$temp_ip = explode(",", $ip);
+
+	if(count($temp_ip) > 1) $ip = trim($temp_ip[0]);
+
+	if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ) {
+		return filter_var( $ip , FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+	}
+
+	if ( filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ) {
+		return filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
+	}
+
+	return 'not detected';
 }
 
-function http_get_contents($file, $post_params = false) {
-    $data = false;
-    
-    if (stripos($file, "http://") !== 0 AND stripos($file, "https://") !== 0) {
-        return false;
-    }
-    
-    if (function_exists('curl_init')) {
-       
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $file);
-        
-        if (is_array($post_params)) {
-           
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_params));
-        }
-        
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
-        
-        $data = curl_exec($ch);
-        curl_close($ch);
-        
-        if ($data !== false) return $data;
-    }
-    
-    if (preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen'))) {
-       
-        if (is_array($post_params)) {
-           
-            $file .= '?' . http_build_query($post_params);
-        }
-        
-        $data = @file_get_contents($file);
-        
-        if ($data !== false) return $data;
-    }
-    
-    return false;
+function http_get_contents( $file, $post_params = false ) {
+		
+	$data = false;
+
+	if (stripos($file, "http://") !== 0 AND stripos($file, "https://") !== 0) {
+		return false;
+	}
+		
+	if( function_exists( 'curl_init' ) ) {
+			
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_URL, $file );
+
+		if( is_array($post_params) ) {
+
+			curl_setopt($ch, CURLOPT_POST, 1);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_params));
+
+		}
+		
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt($ch, CURLOPT_TIMEOUT, 5 );
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+		curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT']);
+			
+		$data = curl_exec( $ch );
+		curl_close( $ch );
+
+		if( $data !== false ) return $data;
+		
+	} 
+
+	if( preg_match('/1|yes|on|true/i', ini_get('allow_url_fopen')) ) {
+
+		if( is_array($post_params) ) {
+
+			$file .= '?'.http_build_query($post_params);
+		}
+
+		$data = @file_get_contents( $file );
+			
+		if( $data !== false ) return $data;
+
+	}
+
+	return false;	
 }
 
 function cleanpath($path) {
-    $path = trim(str_replace(chr(0), '', (string)$path));
-    $path = str_replace(array('/', '\\'), '/', $path);
-    $path = str_replace(array('"', "'"), '', $path);
-    
-    if (preg_match('#\p{C}+#u', $path)) {
+	$path = trim(str_replace(chr(0), '', (string)$path));
+	$path = str_replace(array('/', '\\'), '/', $path);
+	$path = str_replace(array('"', "'"), '', $path);
+	
+	if (preg_match('#\p{C}+#u', $path)) {
         return '';
     }
-    
-    $path = strip_tags($path);
-    
-    $parts = array_filter(explode('/', $path), 'strlen');
-    $absolutes = array();
-    foreach ($parts as $part) {
-        if ('.' == $part OR !$part) continue;
-        if ('..' == $part) {
-            array_pop($absolutes);
-        } else {
-            $absolutes[] = $part;
-        }
-    }
-    
-    return implode('/', $absolutes);
+	
+	$path = strip_tags($path);
+	
+	$parts = array_filter(explode('/', $path), 'strlen');
+	$absolutes = array();
+	foreach ($parts as $part) {
+		if ('.' == $part OR !$part) continue;
+		if ('..' == $part) {
+			array_pop($absolutes);
+		} else {
+			$absolutes[] = $part;
+		}
+	}
+
+	return implode('/', $absolutes);
 }
 
-function is_md5hash($md5 = '') {
-    return strlen($md5) == 32 && ctype_xdigit($md5);
+function is_md5hash( $md5 = '' ) {
+  return strlen($md5) == 32 && ctype_xdigit($md5);
 }
 
-function generate_pin() {
-    $pin = "";
-    
-    for ($i = 0; $i < 5; $i++) {
-       
-        $pin .= random_int(0, 9);
-    }
-    
+function generate_pin(){
+	
+	$pin = "";
+	
+	for($i = 0; $i < 5; $i ++) {
+
+		$pin .= random_int(0, 9);
+	}
+	
     return $pin;
 }
 
 function normalize_name($var, $punkt = true) {
-   
-    if (!is_string($var)) return;
-    
-    $var = str_replace(chr(0), '', $var);
-    
-    $var = trim(strip_tags($var));
-    $var = preg_replace("/\s+/u", "-", $var);
-    $var = str_replace("/", "-", $var);
-    
-    if ($punkt) $var = preg_replace("/[^a-z0-9_\-\.]+/mi", "", $var);
-    else $var = preg_replace("/[^a-z0-9_\-]+/mi", "", $var);
-    
-    $var = preg_replace('#[\-]+#i', '-', $var);
-    $var = preg_replace('#[.]+#i', '.', $var);
-    
-    return $var;
+	
+	if ( !is_string($var) ) return;
+
+	$var = str_replace(chr(0), '', $var);
+	
+	$var = trim( strip_tags( $var ) );
+	$var = preg_replace( "/\s+/u", "-", $var );
+	$var = str_replace( "/", "-", $var );
+	
+	if ( $punkt ) $var = preg_replace( "/[^a-z0-9\_\-.]+/mi", "", $var );
+	else $var = preg_replace( "/[^a-z0-9\_\-]+/mi", "", $var );
+
+	$var = preg_replace( '#[\-]+#i', '-', $var );
+	$var = preg_replace( '#[.]+#i', '.', $var );
+	
+	return $var;
 }
 
-function clearfilepath($file, $ext = array()) {
-   
-    $file = trim(str_replace(chr(0), '', (string)$file));
-    $file = str_replace(array('/', '\\'), '/', $file);
-    
-    $path_parts = pathinfo($file);
-    
-    if (count($ext)) {
-        if (!isset($path_parts['extension']) OR !in_array($path_parts['extension'], $ext)) return '';
-    }
-    
-    $filename = normalize_name($path_parts['basename'], true);
-    
-    if (!$filename) return '';
-    
-    $parts = array_filter(explode('/', $path_parts['dirname']), 'strlen');
-    
-    $absolutes = array();
-    
-    foreach ($parts as $part) {
-        if ('.' == $part) continue;
-        if ('..' == $part) {
-            array_pop($absolutes);
-        } else {
-            $absolutes[] = normalize_name($part, false);
-        }
-    }
-    
-    $path = implode('/', $absolutes);
-    
-    if ($path) return implode('/', $absolutes) . '/' . $filename;
-    else return '';
+function clearfilepath( $file, $ext=array() ) {
+
+	$file = trim(str_replace(chr(0), '', (string)$file));
+	$file = str_replace(array('/', '\\'), '/', $file);
+	
+	$path_parts = pathinfo( $file );
+
+	if( count($ext) ) {
+		if ( !isset($path_parts['extension']) OR !in_array( $path_parts['extension'], $ext ) ) return '';
+	}
+	
+	$filename = normalize_name($path_parts['basename'], true);
+	
+	if( !$filename) return '';
+	
+	$parts = array_filter(explode('/', $path_parts['dirname']), 'strlen');
+	
+	$absolutes = array();
+	
+	foreach ($parts as $part) {
+		if ('.' == $part) continue;
+		if ('..' == $part) {
+			array_pop($absolutes);
+		} else {
+			$absolutes[] = normalize_name($part, false);
+		}
+	}
+
+	$path = implode('/', $absolutes);
+	
+	if ( $path ) return implode('/', $absolutes).'/'.$filename;
+	else return '';
+
 }
 
 function execute_query($id, $query) {
-    global $config, $db;
-    
-    if (!$query) return;
-    
-    if (version_compare($db->mysql_version, '5.6.4', '<')) {
-        $storage_engine = "MyISAM";
-    } else $storage_engine = "InnoDB";
-    
-    $query = str_ireplace(array("{prefix}", "{userprefix}", "{charset}", "{engine}"), array(PREFIX, USERPREFIX, COLLATE, $storage_engine), $query);
-    
-    $db->query_errors_list = array();
-    
-    $db->multi_query(trim($query), false);
-    
-    $id = intval($id);
-    
-    if (count($db->query_errors_list)) {
-       
-        foreach ($db->query_errors_list as $error) {
-            $stmt = $db->prepare("INSERT INTO " . PREFIX . "_plugins_logs (plugin_id, area, error, type) values (?, ?, ?, 'mysql')");
-            $stmt->bind_param("iss", $id, htmlspecialchars($error['query'], ENT_QUOTES, $config['charset']), htmlspecialchars($error['error'], ENT_QUOTES, $config['charset']));
-            $stmt->execute();
-        }
-    }
-    
-    $db->query_errors_list = array();
+	global $config, $db;
+
+	if(!$query) return;
+	
+	if( version_compare($db->mysql_version, '5.6.4', '<') ) {
+		$storage_engine = "MyISAM";
+	} else $storage_engine = "InnoDB";
+	
+	$query = str_ireplace(array("{prefix}", "{userprefix}", "{charset}", "{engine}"), array(PREFIX, USERPREFIX, COLLATE, $storage_engine), $query);
+
+	$db->query_errors_list = array();
+		
+	$db->multi_query( trim($query), false );
+	
+	$id = intval($id);
+
+	if( count($db->query_errors_list) ){
+
+		foreach($db->query_errors_list as $error) {
+			$db->query( "INSERT INTO " . PREFIX . "_plugins_logs (plugin_id, area, error, type) values ('{$id}', '".$db->safesql( htmlspecialchars( $error['query'], ENT_QUOTES, $config['charset'] ), false)."', '".$db->safesql( htmlspecialchars( $error['error'], ENT_QUOTES, $config['charset'] ) )."', 'mysql')" );
+		}
+		
+	}
+	
+	$db->query_errors_list = array();
+	
 }
 
-function check_referer($current_path) {
-   
-    if (!isset($_SERVER['HTTP_REFERER']) OR !$_SERVER['HTTP_REFERER']) return false;
-    
-    $ref = parse_url($_SERVER['HTTP_REFERER']);
-    $ref['host'] = clean_url($ref['host']);
-    $ref['path'] = basename($ref['path']);
-    
-    $current_path = html_entity_decode($current_path, ENT_QUOTES | ENT_XML1, 'UTF-8');
-    $curr = parse_url($current_path);
-    $curr['host'] = clean_url($_SERVER['HTTP_HOST']);
-    $curr['path'] = basename($curr['path']);
-    
-    if ($ref['path'] AND $curr['path'] AND $ref['host'] AND $curr['host'] AND $ref['path'] == $curr['path'] AND $ref['host'] == $curr['host']) {
-        if (strpos($ref['query'], $curr['query']) !== false) {
-            return true;
-        }
-    }
-    
-    return false;
+function check_referer( $current_path ) {
+
+	if( !isset($_SERVER['HTTP_REFERER']) OR !$_SERVER['HTTP_REFERER']) return false;
+	
+	$ref = parse_url($_SERVER['HTTP_REFERER']);
+	$ref['host'] = clean_url($ref['host']);
+	$ref['path'] = basename($ref['path']);
+	
+	$current_path = html_entity_decode($current_path, ENT_QUOTES | ENT_XML1, 'UTF-8');
+	$curr = parse_url($current_path);
+	$curr['host'] = clean_url($_SERVER['HTTP_HOST']);
+	$curr['path'] = basename($curr['path']);
+	
+	if( $ref['path'] AND $curr['path'] AND $ref['host'] AND $curr['host'] AND $ref['path'] == $curr['path'] AND $ref['host'] == $curr['host'] ) {
+		if( strpos($ref['query'], $curr['query']) !== false) {
+			return true;
+		}
+	}
+	
+	return false;
+	
 }
 
 function isSSL() {
-    if (
-        (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+    if( (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
         || (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https')
         || (!empty($_SERVER['HTTP_X_FORWARDED_SSL']) && strtolower($_SERVER['HTTP_X_FORWARDED_SSL']) == 'on')
         || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443)
         || (isset($_SERVER['HTTP_X_FORWARDED_PORT']) && $_SERVER['HTTP_X_FORWARDED_PORT'] == 443)
         || (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https')
-        || (isset($_SERVER['CF_VISITOR']) && $_SERVER['CF_VISITOR'] == '{"scheme":"https"}')
-        || (isset($_SERVER['HTTP_CF_VISITOR']) && $_SERVER['HTTP_CF_VISITOR'] == '{"scheme":"https"}')
+		|| (isset($_SERVER['CF_VISITOR']) && $_SERVER['CF_VISITOR'] == '{"scheme":"https"}')
+		|| (isset($_SERVER['HTTP_CF_VISITOR']) && $_SERVER['HTTP_CF_VISITOR'] == '{"scheme":"https"}')
     ) return true; else return false;
 }
 
-function get_uploaded_image_info($file, $root_folder = 'posts', $force_size = false) {
-    global $config;
-    
-    $info = array();
-    $file = explode("|", $file);
-    $path = $file[0];
-    $path = str_replace('&#58;', ':', $path);
-    
-    if (stripos($path, "https://") === 0 OR stripos($path, "http://") === 0 OR stripos($path, "//") === 0) {
-       
-        $info['remote'] = true;
-        $info['local'] = false;
-        $info['exists'] = true;
-        $info['url'] = $path;
-        
-        $path = explode("/{$root_folder}/", $path);
-        
-        $info['path'] = $path[1];
-        $info['root'] = $path[0] . "/{$root_folder}/";
-    } else {
-       
-        $info['remote'] = false;
-        $info['exists'] = true;
-        $info['path'] = $path;
-        $info['root'] = $config['http_home_url'] . "uploads/{$root_folder}/";
-        $info['url'] = $info['root'] . $info['path'];
-        
-        if (!file_exists(ROOT_DIR . "/uploads/{$root_folder}/" . $info['path'])) {
-           
-            $info['url'] = $config['http_home_url'] . "engine/skins/images/noimage.jpg";
-            $file[1] = 0;
-            $file[2] = 0;
-            $file[3] = "0x0";
-            $file[4] = "0 b";
-            $info['exists'] = false;
-        }
-    }
-    
-    if (count($file) == 1) {
-       
-        $info['local_check'] = true;
-        $file[1] = 0;
-        $file[2] = 0;
-        
-        $files_array = explode('/', $file[0]);
-        
-        if (count($files_array) == 2) {
-            $folder_prefix = $files_array[0] . '/';
-            $file_name = $files_array[1];
-        } else {
-            $folder_prefix = '';
-            $file_name = $files_array[0];
-        }
-        
-        if (file_exists(ROOT_DIR . "/uploads/{$root_folder}/" . $folder_prefix . "thumbs/" . $file_name)) $file[1] = 1;
-        if (file_exists(ROOT_DIR . "/uploads/{$root_folder}/" . $folder_prefix . "medium/" . $file_name)) $file[2] = 1;
-        
-        if ($force_size) {
-           
-            if (file_exists(ROOT_DIR . "/uploads/{$root_folder}/" . $info['path'])) {
-               
-                $img_info = @getimagesize(ROOT_DIR . "/uploads/{$root_folder}/" . $info['path']);
-                $file[3] = "{$img_info[0]}x{$img_info[1]}";
-                $file[4] = formatsize(filesize(ROOT_DIR . "/uploads/{$root_folder}/" . $info['path']));
-            } else {
-               
-                $file[3] = "0x0";
-                $file[4] = "0 b";
-            }
-        }
-    } else $info['local_check'] = false;
-    
-    $parts = pathinfo($info['path']);
-    $info['folder'] = $parts['dirname'];
-    $info['name'] = $parts['basename'];
-    
-    if (isset($file[5]) and $file[5]) {
-        $info['hidpi'] = pathinfo($info['name'], PATHINFO_FILENAME) . '@x2.' . pathinfo($info['name'], PATHINFO_EXTENSION);
-    } else {
-        $info['hidpi'] = false;
-    }
-    
-    if (isset($file[1]) AND $file[1]) {
-        $info['thumb'] = $info['root'] . $info['folder'] . "/thumbs/" . $info['name'];
-        
-        if ($info['hidpi']) $info['hidpi_thumb'] = $info['root'] . $info['folder'] . "/thumbs/" . $info['hidpi'];
-    } else {
-        $info['thumb'] = false;
-    }
-    
-    if (isset($file[2]) AND $file[2]) {
-        $info['medium'] = $info['root'] . $info['folder'] . "/medium/" . $info['name'];
-        
-        if ($info['hidpi']) $info['hidpi_medium'] = $info['root'] . $info['folder'] . "/medium/" . $info['hidpi'];
-    } else {
-        $info['medium'] = false;
-    }
-    
-    if (isset($file[3]) AND $file[3]) $info['dimension'] = $file[3]; else $info['dimension'] = false;
-    if (isset($file[4]) AND $file[4]) $info['size'] = $file[4]; else $info['size'] = false;
-    
-    return (object)$info;
+function get_uploaded_image_info( $file, $root_folder = 'posts', $force_size = false ) {
+	global $config;
+	
+	$info = array();
+	$file = explode("|", $file);
+	$path = $file[0];
+	$path = str_replace('&#58;',':', $path);
+
+	if( stripos($path, "https://" ) === 0 OR stripos($path, "http://" ) === 0 OR stripos($path, "//" ) === 0 ) {
+		
+		$info['remote'] = true;
+		$info['local'] 	= false;
+		$info['exists'] = true;
+		$info['url'] 	= $path;
+		
+		$path = explode("/{$root_folder}/", $path);
+		
+		$info['path'] = $path[1];
+		$info['root'] = $path[0] . "/{$root_folder}/";
+		
+	} else {
+		
+		$info['remote'] = false;
+		$info['exists'] = true;
+		$info['path'] 	= $path;
+		$info['root']   = $config['http_home_url'] . "uploads/{$root_folder}/";
+		$info['url'] 	= $info['root'] . $info['path'];
+		
+		if( !file_exists( ROOT_DIR . "/uploads/{$root_folder}/" . $info['path'] ) ) {
+			
+			$info['url'] = 	$config['http_home_url'] . "engine/skins/images/noimage.jpg";
+			$file[1] = 0;
+			$file[2] = 0;
+			$file[3] = "0x0";
+			$file[4] = "0 b";
+			$info['exists'] = false;
+	
+		}
+
+	}
+
+	if( count($file) == 1) {
+
+		$info['local_check'] = true;
+		$file[1] = 0;
+		$file[2] = 0;
+
+		$files_array = explode('/', $file[0]);
+
+		if( count($files_array) == 2 ) {
+			$folder_prefix = $files_array[0].'/';
+			$file_name =  $files_array[1];
+		} else {
+			$folder_prefix = '';
+			$file_name =  $files_array[0];
+		}
+
+		if( file_exists( ROOT_DIR . "/uploads/{$root_folder}/" . $folder_prefix . "thumbs/" . $file_name ) ) $file[1] = 1;
+		if( file_exists( ROOT_DIR . "/uploads/{$root_folder}/" . $folder_prefix . "medium/" . $file_name ) ) $file[2] = 1;
+		
+		if( $force_size ) {
+			
+			if( file_exists( ROOT_DIR . "/uploads/{$root_folder}/" . $info['path'] ) ) {
+				
+				$img_info =  @getimagesize( ROOT_DIR . "/uploads/{$root_folder}/" . $info['path'] );
+				$file[3] = "{$img_info[0]}x{$img_info[1]}";
+				$file[4] = formatsize( filesize( ROOT_DIR . "/uploads/{$root_folder}/" . $info['path'] ) );
+	
+			} else {
+				
+				$file[3] = "0x0";
+				$file[4] = "0 b";
+				
+			}
+				
+		}
+		
+		
+	} else $info['local_check'] = false;
+
+	$parts = pathinfo($info['path']);
+	$info['folder'] = $parts['dirname'];
+	$info['name'] = $parts['basename'];
+
+	if (isset($file[5]) and $file[5]) {
+		$info['hidpi'] = pathinfo($info['name'], PATHINFO_FILENAME) . '@x2.' . pathinfo($info['name'], PATHINFO_EXTENSION);
+	} else {
+		$info['hidpi'] = false;
+	}
+
+	if( isset($file[1]) AND $file[1]) {
+		$info['thumb'] = $info['root'] . $info['folder'] . "/thumbs/" . $info['name'];
+
+		if( $info['hidpi'] ) $info['hidpi_thumb'] = $info['root'] . $info['folder'] . "/thumbs/" . $info['hidpi'];
+	} else {
+		$info['thumb'] = false;
+	}
+	
+	if( isset($file[2]) AND $file[2]) {
+		$info['medium'] = $info['root'] . $info['folder'] . "/medium/" . $info['name'];
+
+		if ($info['hidpi']) $info['hidpi_medium'] = $info['root'] . $info['folder'] . "/medium/" . $info['hidpi'];
+	} else {
+		$info['medium'] = false;
+	}
+
+	if( isset($file[3]) AND $file[3]) $info['dimension'] = $file[3]; else $info['dimension'] = false;
+	if( isset($file[4]) AND $file[4]) $info['size'] = $file[4]; else $info['size'] = false;
+
+	return (object)$info;
 }
 
 function UniqIDReal($lenght = 10) {
-    if (function_exists("random_bytes")) {
-        $bytes = random_bytes(ceil($lenght / 2));
-    } elseif (function_exists("openssl_random_pseudo_bytes")) {
-        $bytes = openssl_random_pseudo_bytes(ceil($lenght / 2));
-    } else {
-        throw new Exception("no cryptographically secure random function available");
-    }
-    return substr(bin2hex($bytes), 0, $lenght);
+	if (function_exists("random_bytes")) {
+		$bytes = random_bytes(ceil($lenght / 2));
+	} elseif (function_exists("openssl_random_pseudo_bytes")) {
+		$bytes = openssl_random_pseudo_bytes(ceil($lenght / 2));
+	} else {
+		throw new Exception("no cryptographically secure random function available");
+	}
+	return substr(bin2hex($bytes), 0, $lenght);
 }
