@@ -352,4 +352,31 @@ HTML;
 		die();
 	}
 
+	public function prepare($query)
+	{
+		return $this->connect->prepare($query);
+	}
+
+	public function execute_query($query, $params = [])
+	{
+		$stmt = $this->prepare($query);
+		if (!$stmt) {
+			die("Prepare failed: " . $this->error());
+		}
+		
+		if (!empty($params)) {
+			$types = str_repeat('s', count($params)); // Assume all strings for simplicity
+			$stmt->bind_param($types, ...$params);
+		}
+		
+		if (!$stmt->execute()) {
+			die("Execute failed: " . $stmt->error);
+		}
+		
+		$result = $stmt->get_result();
+		$stmt->close();
+		
+		return $result;
+	}
+
 }

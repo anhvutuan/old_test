@@ -134,7 +134,9 @@ function check_reg($name, $email, $password1, $password2, $sec_code = 1, $sec_co
 		}
 		$search_name = strtr( $name, $relates_word );
 
-		$row = $db->super_query( "SELECT COUNT(*) as count FROM " . USERPREFIX . "_users WHERE email = '{$email}' OR LOWER(name) REGEXP '^{$search_name}$' OR name = '{$name}'" );
+		$query = "SELECT COUNT(*) as count FROM " . USERPREFIX . "_users WHERE email = ? OR LOWER(name) REGEXP ? OR name = ?";
+		$result = $db->execute_query($query, [$email, "^{$search_name}$", $name]);
+		$row = $result->fetch_assoc();
 
 		if( $row['count'] ) $stop .= $lang['reg_err_8'];
 	}
@@ -159,7 +161,9 @@ if( $config['auth_only_social'] AND !$stopregistration) {
 
 if ( $config['sec_addnews'] AND !$stopregistration ) {
 
-	$row = $db->super_query( "SELECT * FROM " . PREFIX . "_spam_log WHERE ip = '{$_IP}'" );
+	$query = "SELECT * FROM " . PREFIX . "_spam_log WHERE ip = ?";
+	$result = $db->execute_query($query, [$_IP]);
+	$row = $result->fetch_assoc();
 	
 	if( !isset($row['id']) ) $row['id'] = false;
 	
@@ -170,14 +174,16 @@ if ( $config['sec_addnews'] AND !$stopregistration ) {
 
 		if ($sfs->is_spammer( $args )) {
 
-			$db->query( "INSERT INTO " . PREFIX . "_spam_log (ip, is_spammer, date) VALUES ('{$_IP}','1', '{$_TIME}')" );
+			$query = "INSERT INTO " . PREFIX . "_spam_log (ip, is_spammer, date) VALUES (?, 1, ?)";
+			$db->execute_query($query, [$_IP, $_TIME]);
 
 			msgbox( $lang['all_info'], $lang['reg_err_28'] );
 			$stopregistration = TRUE;
 
 		} else {
 
-			$db->query( "INSERT INTO " . PREFIX . "_spam_log (ip, is_spammer, date) VALUES ('{$_IP}','0', '{$_TIME}')" );
+			$query = "INSERT INTO " . PREFIX . "_spam_log (ip, is_spammer, date) VALUES (?, 0, ?)";
+			$db->execute_query($query, [$_IP, $_TIME]);
 		}
 
 	} else {
@@ -195,7 +201,9 @@ if ( $config['sec_addnews'] AND !$stopregistration ) {
 
 if( $config['max_users'] > 0 AND !$stopregistration) {
 
-	$row = $db->super_query( "SELECT COUNT(*) as count FROM " . USERPREFIX . "_users" );
+	$query = "SELECT COUNT(*) as count FROM " . USERPREFIX . "_users";
+	$result = $db->execute_query($query);
+	$row = $result->fetch_assoc();
 
 	if ( $row['count'] >= $config['max_users'] ) {
 		msgbox( $lang['all_info'], $lang['reg_err_10'] );
@@ -206,7 +214,9 @@ if( $config['max_users'] > 0 AND !$stopregistration) {
 
 if( !$config['reg_multi_ip'] AND !$is_logged AND !$stopregistration) {
 
-	$row = $db->super_query( "SELECT COUNT(*) as count FROM " . USERPREFIX . "_users WHERE logged_ip = '{$_IP}'" );
+	$query = "SELECT COUNT(*) as count FROM " . USERPREFIX . "_users WHERE logged_ip = ?";
+	$result = $db->execute_query($query, [$_IP]);
+	$row = $result->fetch_assoc();
 
 	if ( $row['count'] ) {
 		msgbox( $lang['all_info'], $lang['reg_err_26'] );
@@ -271,7 +281,9 @@ if( isset( $_POST['submit_reg'] ) AND !$stopregistration ) {
 
 		if ( intval($_SESSION['question']) ) {
 
-			$answer = $db->super_query("SELECT id, answer FROM " . PREFIX . "_question WHERE id='".intval($_SESSION['question'])."'");
+			$query = "SELECT id, answer FROM " . PREFIX . "_question WHERE id = ?";
+			$result = $db->execute_query($query, [intval($_SESSION['question'])]);
+			$answer = $result->fetch_assoc();
 
 			$answers = explode( "\n", $answer['answer'] );
 
@@ -312,13 +324,15 @@ if( isset( $_POST['submit_reg'] ) AND !$stopregistration ) {
 
 		if ($sfs->is_spammer( $args )) {
 
-			$db->query( "UPDATE " . PREFIX . "_spam_log SET is_spammer='1', email='{$email}' WHERE ip = '{$_IP}'" );
+			$query = "UPDATE " . PREFIX . "_spam_log SET is_spammer = 1, email = ? WHERE ip = ?";
+			$db->execute_query($query, [$email, $_IP]);
 			$stopregistration = TRUE;
 			$reg_error .= $lang['reg_err_35'];
 
 		} else {
 
-			$db->query( "UPDATE " . PREFIX . "_spam_log SET email='{$email}' WHERE ip = '{$_IP}'" );
+			$query = "UPDATE " . PREFIX . "_spam_log SET email = ? WHERE ip = ?";
+			$db->execute_query($query, [$email, $_IP]);
 
 		}
 
@@ -333,7 +347,9 @@ if( isset( $_POST['submit_reg'] ) AND !$stopregistration ) {
 
 		if( $config['registration_type'] ) {
 
-			$row = $db->super_query( "SELECT * FROM " . PREFIX . "_email where name='reg_mail' LIMIT 0,1" );
+			$query = "SELECT * FROM " . PREFIX . "_email WHERE name = 'reg_mail' LIMIT 1";
+			$result = $db->execute_query($query);
+			$row = $result->fetch_assoc();
 			$mail = new dle_mail( $config, $row['use_html'] );
 			
 			$row['template'] = stripslashes( $row['template'] );
@@ -443,7 +459,9 @@ if( $doaction != "validating" AND !$stopregistration ) {
 			$tpl->set( '[question]', "" );
 			$tpl->set( '[/question]', "" );
 
-			$question = $db->super_query("SELECT id, question FROM " . PREFIX . "_question ORDER BY RAND() LIMIT 1");
+			$query = "SELECT id, question FROM " . PREFIX . "_question ORDER BY RAND() LIMIT 1";
+			$result = $db->execute_query($query);
+			$question = $result->fetch_assoc();
 			$tpl->set( '{question}', htmlspecialchars( stripslashes( $question['question'] ), ENT_QUOTES, $config['charset'] ) );
 
 			$_SESSION['question'] = $question['id'];
@@ -615,7 +633,9 @@ if( isset( $_POST['submit_val'] ) AND !$stopregistration ) {
 
 	if( preg_match( "/[\||\'|\<|\>|\[|\]|\"|\!|\?|\$|\@|\/|\\\|\&\~\*\{\+]/", $user ) ) die( 'USER not valid!' );
 
-	$row = $db->super_query( "SELECT * FROM " . USERPREFIX . "_users WHERE name = '{$user}'" );
+	$query = "SELECT * FROM " . USERPREFIX . "_users WHERE name = ?";
+	$result = $db->execute_query($query, [$user]);
+	$row = $result->fetch_assoc();
 
 	if( !$row['user_id'] ) die("Access Denied!");
 	
@@ -687,7 +707,8 @@ if( isset( $_POST['submit_val'] ) AND !$stopregistration ) {
 							
 						}
 						
-						$db->query( "UPDATE " . USERPREFIX . "_users SET foto='{$foto_name}' WHERE user_id = '{$row['user_id']}'" );
+						$query = "UPDATE " . USERPREFIX . "_users SET foto = ? WHERE user_id = ?";
+						$db->execute_query($query, [$foto_name, $row['user_id']]);
 
 					} else $stop .= $thumb->error;
 					
@@ -734,7 +755,8 @@ if( isset( $_POST['submit_val'] ) AND !$stopregistration ) {
 		
 	} else {
 
-		$db->query( "UPDATE " . USERPREFIX . "_users SET fullname='{$fullname}', info='{$info}', land='{$land}', xfields='{$filecontents}' WHERE user_id='{$row['user_id']}'" );
+		$query = "UPDATE " . USERPREFIX . "_users SET fullname = ?, info = ?, land = ?, xfields = ? WHERE user_id = ?";
+		$db->execute_query($query, [$fullname, $info, $land, $filecontents, $row['user_id']]);
 
 		msgbox( $lang['reg_ok'], $lang['reg_ok_1'] );
 
@@ -795,7 +817,8 @@ if( $doaction == "validating" AND !$stopregistration AND !isset($_POST['submit_v
 				
 			$hash = md5( random_bytes(32) );
 			
-			$db->query( "INSERT INTO " . USERPREFIX . "_users (name, password, email, reg_date, lastdate, user_group, info, signature, favorites, xfields, logged_ip, hash) VALUES ('{$name}', '{$regpassword}', '{$email}', '{$add_time}', '{$add_time}', '{$config['reg_group']}', '', '', '', '', '{$_IP}', '{$hash}')" );
+			$query = "INSERT INTO " . USERPREFIX . "_users (name, password, email, reg_date, lastdate, user_group, info, signature, favorites, xfields, logged_ip, hash) VALUES (?, ?, ?, ?, ?, ?, '', '', '', '', ?, ?)";
+			$db->execute_query($query, [$name, $regpassword, $email, $add_time, $add_time, $config['reg_group'], $_IP, $hash]);
 			$id = $db->insert_id();
 
 			set_cookie( "dle_user_id", $id, 365 );

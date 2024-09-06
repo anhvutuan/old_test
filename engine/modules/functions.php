@@ -608,8 +608,6 @@ HTML;
 	
 	} elseif ($config['comments_rating_type'] == "2" OR $config['comments_rating_type'] == "3") {
 		
-		$extraclass = "ratingzero";
-		
 		if( $rating < 0 ) {
 			$extraclass = "ratingminus";
 		}
@@ -3230,7 +3228,7 @@ function build_js($js, $config) {
 	$defer = "";
 	
 	$config['jquery_version'] = intval($config['jquery_version']);
-	
+
 	$ver = $config['jquery_version'] ? $config['jquery_version'] : "";
 
 	if( is_array($tpl->js_array) AND count($tpl->js_array) ) {
@@ -3925,15 +3923,18 @@ function deletecommentsbynewsid( $id ) {
 	$id = intval($id);
 	DLEFiles::init();
 	
-	$result = $db->query( "SELECT id FROM " . PREFIX . "_comments WHERE post_id='{$id}'" );
+	$query = "SELECT id FROM " . PREFIX . "_comments WHERE post_id = ?";
+	$result = $db->execute_query($query, [$id]);
 	
-	while ( $row = $db->get_array( $result ) ) {
+	while ( $row = $result->fetch_assoc() ) {
 		
-		$db->query( "DELETE FROM " . PREFIX . "_comment_rating_log WHERE c_id = '{$row['id']}'" );
+		$query = "DELETE FROM " . PREFIX . "_comment_rating_log WHERE c_id = ?";
+		$db->execute_query($query, [$row['id']]);
 
-		$sub_result = $db->query( "SELECT id, name, driver FROM " . PREFIX . "_comments_files WHERE c_id = '{$row['id']}'" );
+		$query = "SELECT id, name, driver FROM " . PREFIX . "_comments_files WHERE c_id = ?";
+		$sub_result = $db->execute_query($query, [$row['id']]);
 		
-		while ( $file = $db->get_row( $sub_result ) ) {
+		while ( $file = $sub_result->fetch_assoc() ) {
 			
 			$dataimage = get_uploaded_image_info( $file['name'] );
 			
@@ -3947,19 +3948,23 @@ function deletecommentsbynewsid( $id ) {
 
 		}
 		
-		$db->query( "DELETE FROM " . PREFIX . "_comments_files WHERE c_id = '{$row['id']}'" );
+		$query = "DELETE FROM " . PREFIX . "_comments_files WHERE c_id = ?";
+		$db->execute_query($query, [$row['id']]);
 	
 	}
 	
-	$result = $db->query( "SELECT COUNT(*) as count, user_id FROM " . PREFIX . "_comments WHERE post_id='{$id}' AND is_register='1' GROUP BY user_id" );
+	$query = "SELECT COUNT(*) as count, user_id FROM " . PREFIX . "_comments WHERE post_id = ? AND is_register = 1 GROUP BY user_id";
+	$result = $db->execute_query($query, [$id]);
 	
-	while ( $row = $db->get_array( $result ) ) {
+	while ( $row = $result->fetch_assoc() ) {
 		
-		$db->query( "UPDATE " . USERPREFIX . "_users SET comm_num=comm_num-{$row['count']} WHERE user_id='{$row['user_id']}'" );
+		$query = "UPDATE " . USERPREFIX . "_users SET comm_num = comm_num - ? WHERE user_id = ?";
+		$db->execute_query($query, [$row['count'], $row['user_id']]);
 	
 	}
 	
-	$db->query( "DELETE FROM " . PREFIX . "_comments WHERE post_id='{$id}'" );
+	$query = "DELETE FROM " . PREFIX . "_comments WHERE post_id = ?";
+	$db->execute_query($query, [$id]);
 
 
 }
@@ -3968,7 +3973,9 @@ function deleteuserbyid($id) {
 
 	$id = intval($id);
 
-	$row = $db->super_query("SELECT user_id, name, foto FROM " . USERPREFIX . "_users WHERE user_id='{$id}'");
+	$query = "SELECT user_id, name, foto FROM " . USERPREFIX . "_users WHERE user_id = ?";
+	$result = $db->execute_query($query, [$id]);
+	$row = $result->fetch_assoc();
 
 	if (isset($row['user_id']) and $row['user_id']) {
 
@@ -3985,19 +3992,32 @@ function deleteuserbyid($id) {
 			DLEFiles::Delete("fotos/" . totranslit($row['foto']));
 		}
 
-		$db->query("DELETE FROM " . USERPREFIX . "_pm WHERE user_from = '{$row['name']}' AND folder = 'outbox'");
-		$db->query("DELETE FROM " . USERPREFIX . "_pm WHERE user='{$row['user_id']}'");
-		$db->query("DELETE FROM " . USERPREFIX . "_social_login WHERE uid='{$row['user_id']}'");
-		$db->query("DELETE FROM " . USERPREFIX . "_banned WHERE users_id='{$row['user_id']}'");
-		$db->query("DELETE FROM " . USERPREFIX . "_ignore_list WHERE user='{$row['user_id']}' OR user_from='{$row['name']}'");
-		$db->query("DELETE FROM " . PREFIX . "_notice WHERE user_id = '{$row['user_id']}'");
-		$db->query("DELETE FROM " . PREFIX . "_subscribe WHERE user_id='{$row['user_id']}'");
-		$db->query("DELETE FROM " . PREFIX . "_logs WHERE `member` = '{$row['name']}'");
-		$db->query("DELETE FROM " . PREFIX . "_comment_rating_log WHERE `member` = '{$row['name']}'");
-		$db->query("DELETE FROM " . PREFIX . "_vote_result WHERE name = '{$row['name']}'");
-		$db->query("DELETE FROM " . PREFIX . "_poll_log WHERE `member` = '{$row['user_id']}'");
-		$db->query("DELETE FROM " . USERPREFIX . "_users WHERE user_id='{$row['user_id']}'");
-		$db->query("DELETE FROM " . USERPREFIX . "_users_delete WHERE user_id='{$row['user_id']}'");
+		$query = "DELETE FROM " . USERPREFIX . "_pm WHERE user_from = ? AND folder = 'outbox'";
+		$db->execute_query($query, [$row['name']]);
+		$query = "DELETE FROM " . USERPREFIX . "_pm WHERE user = ?";
+		$db->execute_query($query, [$row['user_id']]);
+		$query = "DELETE FROM " . USERPREFIX . "_social_login WHERE uid = ?";
+		$db->execute_query($query, [$row['user_id']]);
+		$query = "DELETE FROM " . USERPREFIX . "_banned WHERE users_id = ?";
+		$db->execute_query($query, [$row['user_id']]);
+		$query = "DELETE FROM " . USERPREFIX . "_ignore_list WHERE user = ? OR user_from = ?";
+		$db->execute_query($query, [$row['user_id'], $row['name']]);
+		$query = "DELETE FROM " . PREFIX . "_notice WHERE user_id = ?";
+		$db->execute_query($query, [$row['user_id']]);
+		$query = "DELETE FROM " . PREFIX . "_subscribe WHERE user_id = ?";
+		$db->execute_query($query, [$row['user_id']]);
+		$query = "DELETE FROM " . PREFIX . "_logs WHERE `member` = ?";
+		$db->execute_query($query, [$row['name']]);
+		$query = "DELETE FROM " . PREFIX . "_comment_rating_log WHERE `member` = ?";
+		$db->execute_query($query, [$row['name']]);
+		$query = "DELETE FROM " . PREFIX . "_vote_result WHERE name = ?";
+		$db->execute_query($query, [$row['name']]);
+		$query = "DELETE FROM " . PREFIX . "_poll_log WHERE `member` = ?";
+		$db->execute_query($query, [$row['user_id']]);
+		$query = "DELETE FROM " . USERPREFIX . "_users WHERE user_id = ?";
+		$db->execute_query($query, [$row['user_id']]);
+		$query = "DELETE FROM " . USERPREFIX . "_users_delete WHERE user_id = ?";
+		$db->execute_query($query, [$row['user_id']]);
 	}
 }
 

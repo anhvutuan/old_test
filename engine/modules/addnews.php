@@ -37,7 +37,9 @@ if( $config['allow_alt_url'] ) $canonical = $config['http_home_url'] . "addnews.
 
 if( $id AND $is_logged AND $user_group[$member_id['user_group']]['allow_adds'] ) {
 
-	$foundrow = $db->super_query("SELECT id, autor, category, xfields, tags FROM " . PREFIX . "_post WHERE id = '{$id}'{$approve_find}" );
+	$query = "SELECT id, autor, category, xfields, tags FROM " . PREFIX . "_post WHERE id = ?{$approve_find}";
+	$result = $db->execute_query($query, [$id]);
+	$foundrow = $result->fetch_assoc();
 
 	if( isset($foundrow['id']) AND $id == $foundrow['id'] AND ($member_id['name'] == $foundrow['autor'] OR $user_group[$member_id['user_group']]['allow_all_edit']) ) $found = true;
 	else $found = false;
@@ -321,9 +323,9 @@ if( !$allow_addnews ) {
 		
 		if( $config['allow_alt_url'] AND !$config['seo_type'] ) {
 			
-			$db->query( "SELECT id, date FROM " . PREFIX . "_post WHERE alt_name ='{$alt_name}'" );
-	
-			while($found_news = $db->get_row()) {
+			$query = "SELECT id, date FROM " . PREFIX . "_post WHERE alt_name = ?";
+			$result = $db->execute_query($query, [$alt_name]);
+			while($found_news = $result->fetch_assoc()) {
 				if( $found_news['id'] AND date( 'Y-m-d', strtotime( $found_news['date'] ) ) == date( 'Y-m-d', $_TIME ) ) {
 					$stop .= "<li>" .$lang['add_err_11'] . "</li>";
 					break;
@@ -332,7 +334,7 @@ if( !$allow_addnews ) {
 		
 		}
 	
-		if ($config['create_catalog']) $catalog_url = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( trim( $title ) ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) ); else $catalog_url = "";
+		if ($config['create_catalog']) $catalog_url = $db->safesql( dle_substr( htmlspecialchars( strip_tags( stripslashes( trim( $title ) ), ENT_QUOTES, $config['charset'] ), 0, 1, $config['charset'] ) ); else $catalog_url = "";
 
 		if ( $user_group[$member_id['user_group']]['disable_news_captcha'] AND $member_id['news_num'] >= $user_group[$member_id['user_group']]['disable_news_captcha'] ) {
 
@@ -347,7 +349,7 @@ if( !$allow_addnews ) {
 	
 				$sec_code = 1;
 				$sec_code_session = false;
-	
+				
 				if ($_POST['g-recaptcha-response']) {
 				
 					$reCaptcha = new ReCaptcha($config['recaptcha_private_key']);
@@ -359,7 +361,7 @@ if( !$allow_addnews ) {
 							$stop .= "<li>" . $lang['recaptcha_fail'] . "</li>";
 	
 				    }
-	
+
 				} else $stop .= "<li>" . $lang['recaptcha_fail'] . "</li>";
 	
 			} elseif( $_REQUEST['sec_code'] != $_SESSION['sec_code_session'] OR !$_SESSION['sec_code_session'] ) $stop .= "<li>" . $lang['recaptcha_fail'] . "</li>";
@@ -371,7 +373,9 @@ if( !$allow_addnews ) {
 	
 			if ( intval($_SESSION['question']) ) {
 	
-				$answer = $db->super_query("SELECT id, answer FROM " . PREFIX . "_question WHERE id='".intval($_SESSION['question'])."'");
+				$query = "SELECT id, answer FROM " . PREFIX . "_question WHERE id = ?";
+				$result = $db->execute_query($query, [intval($_SESSION['question'])]);
+				$answer = $result->fetch_assoc();
 	
 				$answers = explode( "\n", $answer['answer'] );
 	
@@ -413,7 +417,9 @@ if( !$allow_addnews ) {
 
 		$max_detected = false;
 		if( $user_group[$member_id['user_group']]['max_day_news'] AND !$found) {
-			$row = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE date >= '".date("Y-m-d", $_TIME)."' AND date < '".date("Y-m-d", $_TIME)."' + INTERVAL 24 HOUR AND autor = '{$member_id['name']}'");
+			$query = "SELECT COUNT(*) as count FROM " . PREFIX . "_post WHERE date >= ? AND date < ? AND autor = ?";
+			$result = $db->execute_query($query, [date("Y-m-d", $_TIME), date("Y-m-d", $_TIME) . " + INTERVAL 24 HOUR", $member_id['name']]);
+			$row = $result->fetch_assoc();
 			if ($row['count'] >= $user_group[$member_id['user_group']]['max_day_news'] ) {
 				$stop .= "<li>" .$lang['news_err_44'] . "</li>";
 				$max_detected = true;
@@ -434,12 +440,15 @@ if( !$allow_addnews ) {
 
 				$msg = $lang['add_ok_4'];
 				$lang['add_ok'] = $lang['title_editnews'];
-				$db->query( "UPDATE " . PREFIX . "_post set title='$title', short_story='$short_story', full_story='$full_story', xfields='$filecontents', category='$category_list', alt_name='$alt_name', allow_comm='$allow_comm', approve='$approve', allow_main='$allow_main', fixed='$news_fixed', allow_br='$allow_br', tags='" . $_POST['tags'] . "' WHERE id='{$foundrow['id']}'" );
-				$db->query( "UPDATE " . PREFIX . "_post_extras SET allow_rate='{$allow_rating}', votes='{$add_vote}' WHERE news_id='{$foundrow['id']}'" );
+				$query = "UPDATE " . PREFIX . "_post SET title = ?, short_story = ?, full_story = ?, xfields = ?, category = ?, alt_name = ?, allow_comm = ?, approve = ?, allow_main = ?, fixed = ?, allow_br = ?, tags = ? WHERE id = ?";
+				$db->execute_query($query, [$title, $short_story, $full_story, $filecontents, $category_list, $alt_name, $allow_comm, $approve, $allow_main, $news_fixed, $allow_br, $_POST['tags'], $foundrow['id']]);
+				$query = "UPDATE " . PREFIX . "_post_extras SET allow_rate = ?, votes = ? WHERE news_id = ?";
+				$db->execute_query($query, [$allow_rating, $add_vote, $foundrow['id']]);
 				$insert_id = $foundrow['id'];
 
 				if( $_POST['tags'] != $foundrow['tags'] OR $approve ) {
-					$db->query( "DELETE FROM " . PREFIX . "_tags WHERE news_id = '{$foundrow['id']}'" );
+					$query = "DELETE FROM " . PREFIX . "_tags WHERE news_id = ?";
+					$db->execute_query($query, [$foundrow['id']]);
 					
 					if( $_POST['tags'] != "" and $approve ) {
 						
@@ -453,13 +462,15 @@ if( !$allow_addnews ) {
 						}
 						
 						$tags = implode( ", ", $tags );
-						$db->query( "INSERT INTO " . PREFIX . "_tags (news_id, tag) VALUES " . $tags );
+						$query = "INSERT INTO " . PREFIX . "_tags (news_id, tag) VALUES " . $tags;
+						$db->query($query);
 					
 					}
 				}
 
 				if( $category_list != $foundrow['category'] OR $approve ) {
-					$db->query( "DELETE FROM " . PREFIX . "_post_extras_cats WHERE news_id = '{$foundrow['id']}'" );
+					$query = "DELETE FROM " . PREFIX . "_post_extras_cats WHERE news_id = ?";
+					$db->execute_query($query, [$foundrow['id']]);
 
 					if( $category_list AND $approve ) {
 
@@ -473,12 +484,14 @@ if( !$allow_addnews ) {
 						}
 
 						$cat_ids = implode( ", ", $cat_ids );
-						$db->query( "INSERT INTO " . PREFIX . "_post_extras_cats (news_id, cat_id) VALUES " . $cat_ids );
+						$query = "INSERT INTO " . PREFIX . "_post_extras_cats (news_id, cat_id) VALUES " . $cat_ids;
+						$db->query($query);
 
 					}
 				}
 				
-				$db->query( "DELETE FROM " . PREFIX . "_xfsearch WHERE news_id = '{$foundrow['id']}'" );
+				$query = "DELETE FROM " . PREFIX . "_xfsearch WHERE news_id = ?";
+				$db->execute_query($query, [$foundrow['id']]);
 
 				if ( count($xf_search_words) AND $approve ) {
 					
@@ -490,20 +503,30 @@ if( !$allow_addnews ) {
 					}
 					
 					$xf_search_words = implode( ", ", $temp_array );
-					$db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words );
+					$query = "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words;
+					$db->query($query);
 				}
 				
 				
 				if( $add_vote ) {
 					
-					$count = $db->super_query( "SELECT COUNT(*) as count FROM " . PREFIX . "_poll WHERE news_id = '{$id}'" );
+					$query = "SELECT COUNT(*) as count FROM " . PREFIX . "_poll WHERE news_id = ?";
+					$result = $db->execute_query($query, [$id]);
+					$count = $result->fetch_assoc();
 					
-					if( $count['count'] ) $db->query( "UPDATE  " . PREFIX . "_poll set title='$vote_title', frage='$frage', body='$vote_body', multiple='$allow_m_vote' WHERE news_id = '{$row['id']}'" );
-					else $db->query( "INSERT INTO " . PREFIX . "_poll (news_id, title, frage, body, votes, multiple, answer) VALUES('{$id}', '$vote_title', '$frage', '$vote_body', 0, '$allow_m_vote', '')" );
+					if( $count['count'] ) {
+						$query = "UPDATE " . PREFIX . "_poll SET title = ?, frage = ?, body = ?, multiple = ? WHERE news_id = ?";
+						$db->execute_query($query, [$vote_title, $frage, $vote_body, $allow_m_vote, $id]);
+					} else {
+						$query = "INSERT INTO " . PREFIX . "_poll (news_id, title, frage, body, votes, multiple, answer) VALUES (?, ?, ?, ?, 0, ?, '')";
+						$db->execute_query($query, [$id, $vote_title, $frage, $vote_body, $allow_m_vote]);
+					}
 				
 				} else {
-					$db->query( "DELETE FROM " . PREFIX . "_poll WHERE news_id='{$foundrow['id']}'" );
-					$db->query( "DELETE FROM " . PREFIX . "_poll_log WHERE news_id='{$foundrow['id']}'" );
+					$query = "DELETE FROM " . PREFIX . "_poll WHERE news_id = ?";
+					$db->execute_query($query, [$foundrow['id']]);
+					$query = "DELETE FROM " . PREFIX . "_poll_log WHERE news_id = ?";
+					$db->execute_query($query, [$foundrow['id']]);
 				}
 				
 				clear_cache( array('full_'. $foundrow['id'], 'comm_'. $foundrow['id']) );
@@ -514,30 +537,38 @@ if( !$allow_addnews ) {
 				$added_time = time();
 				$thistime = date( "Y-m-d H:i:s", $added_time );
 				
-				$db->query( "INSERT INTO " . PREFIX . "_post (date, autor, short_story, full_story, xfields, title, keywords, category, alt_name, allow_comm, approve, allow_main, fixed, allow_br, symbol, tags) values ('$thistime', '{$member_id['name']}', '$short_story', '$full_story', '$filecontents', '$title', '', '$category_list', '$alt_name', '$allow_comm', '$approve', '$allow_main', '$news_fixed', '$allow_br', '$catalog_url', '" . $_POST['tags'] . "')" );
+				$query = "INSERT INTO " . PREFIX . "_post (date, autor, short_story, full_story, xfields, title, keywords, category, alt_name, allow_comm, approve, allow_main, fixed, allow_br, symbol, tags) VALUES (?, ?, ?, ?, ?, ?, '', ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+				$db->execute_query($query, [$thistime, $member_id['name'], $short_story, $full_story, $filecontents, $title, $category_list, $alt_name, $allow_comm, $approve, $allow_main, $news_fixed, $allow_br, $catalog_url, $_POST['tags']]);
 				
-				$row['id'] = $insert_id = $db->insert_id();
+				$insert_id = $db->insert_id();
 
-				$db->query( "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, votes, user_id, allow_rss, allow_rss_turbo, allow_rss_dzen) VALUES('{$row['id']}', '{$allow_rating}', '{$add_vote}','{$member_id['user_id']}', '1', '{$allow_rss_turbo}', '{$allow_rss_dzen}')" );
+				$query = "INSERT INTO " . PREFIX . "_post_extras (news_id, allow_rate, votes, user_id, allow_rss, allow_rss_turbo, allow_rss_dzen) VALUES (?, ?, ?, ?, 1, ?, ?)";
+				$db->execute_query($query, [$insert_id, $allow_rating, $add_vote, $member_id['user_id'], $allow_rss_turbo, $allow_rss_dzen]);
 
 				if ( $approve ) {
 					
-					$db->query( "INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) values ('".$db->safesql($member_id['name'])."', '{$_TIME}', '{$_IP}', '1', '{$title}')" );
+					$query = "INSERT INTO " . USERPREFIX . "_admin_logs (name, date, ip, action, extras) VALUES (?, ?, ?, 1, ?)";
+					$db->execute_query($query, [$db->safesql($member_id['name']), $_TIME, $_IP, $title]);
 					
 				}
 				
 				if( $add_vote ) {
-					$db->query( "INSERT INTO " . PREFIX . "_poll (news_id, title, frage, body, votes, multiple, answer) VALUES('{$row['id']}', '{$vote_title}', '{$frage}', '{$vote_body}', 0, '{$allow_m_vote}', '')" );
+					$query = "INSERT INTO " . PREFIX . "_poll (news_id, title, frage, body, votes, multiple, answer) VALUES (?, ?, ?, ?, 0, ?, '')";
+					$db->execute_query($query, [$insert_id, $vote_title, $frage, $vote_body, $allow_m_vote]);
 				}
 
 				$member_id['name'] = $db->safesql($member_id['name']);
 
-				$db->query( "UPDATE " . PREFIX . "_images set news_id='{$row['id']}' where author = '{$member_id['name']}' AND news_id = '0'" );
-				$db->query( "UPDATE " . PREFIX . "_files set news_id='{$row['id']}' where author = '{$member_id['name']}' AND news_id = '0'" );
-				$db->query( "UPDATE " . USERPREFIX . "_users set news_num=news_num+1 where user_id='{$member_id['user_id']}'" );
+				$query = "UPDATE " . PREFIX . "_images SET news_id = ? WHERE author = ? AND news_id = 0";
+				$db->execute_query($query, [$insert_id, $member_id['name']]);
+				$query = "UPDATE " . PREFIX . "_files SET news_id = ? WHERE author = ? AND news_id = 0";
+				$db->execute_query($query, [$insert_id, $member_id['name']]);
+				$query = "UPDATE " . USERPREFIX . "_users SET news_num = news_num + 1 WHERE user_id = ?";
+				$db->execute_query($query, [$member_id['user_id']]);
 
 				if( $user_group[$member_id['user_group']]['flood_news'] ) {
-					$db->query( "INSERT INTO " . PREFIX . "_flood (id, ip, flag) values ('$_TIME', '{$member_id['name']}', '1')" );
+					$query = "INSERT INTO " . PREFIX . "_flood (id, ip, flag) VALUES (?, ?, 1)";
+					$db->execute_query($query, [$_TIME, $member_id['name']]);
 				}
 				
 				if( $_POST['tags'] AND $approve ) {
@@ -548,11 +579,12 @@ if( !$allow_addnews ) {
 					
 					foreach ( $_POST['tags'] as $value ) {
 						
-						$tags[] = "('" . $row['id'] . "', '" . trim( $value ) . "')";
+						$tags[] = "('" . $insert_id . "', '" . trim( $value ) . "')";
 					}
 					
 					$tags = implode( ", ", $tags );
-					$db->query( "INSERT INTO " . PREFIX . "_tags (news_id, tag) VALUES " . $tags );
+					$query = "INSERT INTO " . PREFIX . "_tags (news_id, tag) VALUES " . $tags;
+					$db->query($query);
 				
 				}
 				
@@ -564,11 +596,12 @@ if( !$allow_addnews ) {
 					
 					foreach ( $cat_ids_arr as $value ) {
 						
-						$cat_ids[] = "('" . $row['id'] . "', '" . trim( $value ) . "')";
+						$cat_ids[] = "('" . $insert_id . "', '" . trim( $value ) . "')";
 					}
 					
 					$cat_ids = implode( ", ", $cat_ids );
-					$db->query( "INSERT INTO " . PREFIX . "_post_extras_cats (news_id, cat_id) VALUES " . $cat_ids );
+					$query = "INSERT INTO " . PREFIX . "_post_extras_cats (news_id, cat_id) VALUES " . $cat_ids;
+					$db->query($query);
 				
 				}
 	
@@ -578,16 +611,19 @@ if( !$allow_addnews ) {
 					
 					foreach ( $xf_search_words as $value ) {
 						
-						$temp_array[] = "('" . $row['id'] . "', '" . $value[0] . "', '" . $value[1] . "')";
+						$temp_array[] = "('" . $insert_id . "', '" . $value[0] . "', '" . $value[1] . "')";
 					}
 					
 					$xf_search_words = implode( ", ", $temp_array );
-					$db->query( "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words );
+					$query = "INSERT INTO " . PREFIX . "_xfsearch (news_id, tagname, tagvalue) VALUES " . $xf_search_words;
+					$db->query($query);
 				}
 				
 				if( !$approve and $config['mail_news'] ) {
 					
-					$row = $db->super_query( "SELECT * FROM " . PREFIX . "_email WHERE name='new_news' LIMIT 0,1" );
+					$query = "SELECT * FROM " . PREFIX . "_email WHERE name = 'new_news' LIMIT 1";
+					$result = $db->execute_query($query);
+					$row = $result->fetch_assoc();
 					$mail = new dle_mail( $config, $row['use_html'] );
 					
 					$row['template'] = stripslashes( $row['template'] );
@@ -624,7 +660,9 @@ if( !$allow_addnews ) {
 
 				if( $config['news_indexnow'] AND $insert_id ) {
 
-					$row = $db->super_query("SELECT id, date, category, alt_name FROM " . PREFIX . "_post WHERE id='{$insert_id}'");
+					$query = "SELECT id, date, category, alt_name FROM " . PREFIX . "_post WHERE id = ?";
+					$result = $db->execute_query($query, [$insert_id]);
+					$row = $result->fetch_assoc();
 
 					if ($config['allow_alt_url']) {
 						if ($config['seo_type'] == 1 or $config['seo_type'] == 2) {
@@ -680,7 +718,9 @@ if( !$allow_addnews ) {
 		
 		if( $found ) {
 			
-			$row = $db->super_query( "SELECT * FROM " . PREFIX . "_post LEFT JOIN " . PREFIX . "_post_extras ON (" . PREFIX . "_post.id=" . PREFIX . "_post_extras.news_id) WHERE id = '{$id}'{$approve_find}" );
+			$query = "SELECT * FROM " . PREFIX . "_post LEFT JOIN " . PREFIX . "_post_extras ON (" . PREFIX . "_post.id=" . PREFIX . "_post_extras.news_id) WHERE id = ?" . $approve_find;
+			$result = $db->execute_query($query, [$id]);
+			$row = $result->fetch_assoc();
 
 			if( isset($row['id']) AND $id == $row['id'] AND ($member_id['name'] == $row['autor'] OR $user_group[$member_id['user_group']]['allow_all_edit']) ) $found = true;
 			else $found = false;
@@ -708,7 +748,9 @@ if( !$allow_addnews ) {
 			$tpl->set( '{tags}', $row['tags'] );
 
 			if( $row['votes'] ) {
-				$poll = $db->super_query( "SELECT * FROM " . PREFIX . "_poll where news_id = '{$row['id']}'" );
+				$query = "SELECT * FROM " . PREFIX . "_poll WHERE news_id = ?";
+				$result = $db->execute_query($query, [$row['id']]);
+				$poll = $result->fetch_assoc();
 				$poll['title'] = $parse->decodeBBCodes( $poll['title'], false );
 				$poll['frage'] = $parse->decodeBBCodes( $poll['frage'], false );
 				$poll['body'] = $parse->decodeBBCodes( $poll['body'], false );
@@ -906,7 +948,9 @@ if( !$allow_addnews ) {
 			$tpl->set( '[question]', "" );
 			$tpl->set( '[/question]', "" );
 
-			$question = $db->super_query("SELECT id, question FROM " . PREFIX . "_question ORDER BY RAND() LIMIT 1");
+			$query = "SELECT id, question FROM " . PREFIX . "_question ORDER BY RAND() LIMIT 1";
+			$result = $db->execute_query($query);
+			$question = $result->fetch_assoc();
 			$tpl->set( '{question}', htmlspecialchars( stripslashes( $question['question'] ), ENT_QUOTES, $config['charset'] ) );
 
 			$_SESSION['question'] = $question['id'];
@@ -1007,7 +1051,7 @@ function preview(){";
 		$.post(dle_root + 'engine/ajax/controller.php?mod=find_relates', { title: title, mode: 1, user_hash: '{$dle_login_hash}' }, function(data){
 	
 			HideLoading('');
-	
+			
 			$('#related_news').html(data);
 	
 		});
