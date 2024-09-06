@@ -1351,7 +1351,7 @@ HTML;
 								$cats_url = get_url( $related['category'] );
 								
 								if( $cats_url ) $cats_url .= "/";
-	
+
 								$rel_full_link = $config['http_home_url'] . $cats_url . $related['id'] . "-" . $related['alt_name'] . ".html";
 							
 							} else {
@@ -1375,9 +1375,9 @@ HTML;
 					
 					$related['title'] = strip_tags( stripslashes( $related['title'] ) );
 
-					$tpl2->set( '{title}', str_replace("&amp;amp;", "&amp;", htmlspecialchars( $related['title'], ENT_QUOTES, $config['charset'] ) ) );
+					$tpl2->set( '{title}', htmlspecialchars( $related['title'], ENT_QUOTES, $config['charset'] ) );
 					$tpl2->set( '{link}', $rel_full_link );
-					$tpl2->set( '{category}', $my_cat );
+					$tpl2->set( '{category}', htmlspecialchars( $my_cat, ENT_QUOTES, $config['charset'] ) );
 					$tpl2->set( '{link-category}', $my_cat_link );
 				
 					$compare_date = compare_days_date($related['date']);
@@ -1411,7 +1411,7 @@ HTML;
 								if( $matches[1] ) {
 									
 									$groups = explode( ',', $matches[1] );
-				
+									
 									if( in_array( $member_id['user_group'], $groups ) OR $member_id['user_group'] == "1") {
 										return $matches[2];
 									} else return "<div class=\"quote dlehidden\">" . $lang['news_regus'] . "</div>";
@@ -1460,11 +1460,11 @@ HTML;
 					}
 
 					if ( preg_match( "#\\{text limit=['\"](.+?)['\"]\\}#i", $tpl2->copy_template, $matches ) ) {
-						$tpl2->set( $matches[0], clear_content($related['short_story'], $matches[1]) );
-					} else $tpl2->set( '{text}', $related['short_story'] );
+						$tpl2->set( $matches[0], htmlspecialchars( clear_content($related['short_story'], $matches[1]), ENT_QUOTES, $config['charset'] ) );
+					} else $tpl2->set( '{text}', htmlspecialchars( $related['short_story'], ENT_QUOTES, $config['charset'] ) );
 
 					if ( preg_match( "#\\{title limit=['\"](.+?)['\"]\\}#i", $tpl2->copy_template, $matches ) ) {
-						$tpl2->set( $matches[0], clear_content($related['title'], $matches[1]) );
+						$tpl2->set( $matches[0], htmlspecialchars( clear_content($related['title'], $matches[1]), ENT_QUOTES, $config['charset'] ) );
 					}
 
 					if( count($xfields) ) {
@@ -1572,7 +1572,7 @@ HTML;
 										
 											if( !trim($value[24]) ) $value[24] = $config['timestamp_active'];
 
-											if (strpos($tpl2->copy_template, "[xfvalue_{$value[0]} format=") !== false) {
+											if (strpos($tpl2->copy_template, "[xfvalue_{$preg_safe_name} format=") !== false) {
 
 												$tpl2->copy_template = preg_replace_callback("#\\[xfvalue_{$preg_safe_name} format=['\"](.*?)['\"]\\]#i",
 													function ($matches) use ($value, $value2, $value4, $customlangdate, $config, $PHP_SELF) {
@@ -1855,7 +1855,7 @@ HTML;
 							$tpl2->set( "[xfvalue_{$value[0]}]", $xfieldsdata[$value[0]] );
 			
 							if ( preg_match( "#\\[xfvalue_{$preg_safe_name} limit=['\"](.+?)['\"]\\]#i", $tpl2->copy_template, $matches ) ) {
-								$tpl2->set( $matches[0], clear_content($xfieldsdata[$value[0]], $matches[1]) );
+								$tpl2->set( $matches[0], htmlspecialchars( clear_content($xfieldsdata[$value[0]], $matches[1]), ENT_QUOTES, $config['charset'] ) );
 							}
 
 						}
@@ -2561,7 +2561,7 @@ HTML;
 				}
 
 				if ( preg_match( "#\\[xfvalue_{$preg_safe_name} limit=['\"](.+?)['\"]\\]#i", $tpl->copy_template, $matches ) ) {
-					$tpl->set( $matches[0], clear_content($xfieldsdata[$value[0]], $matches[1]) );
+					$tpl->set( $matches[0], htmlspecialchars( clear_content($xfieldsdata[$value[0]], $matches[1]), ENT_QUOTES, $config['charset'] ) );
 				}
 				
 			}
@@ -2576,9 +2576,9 @@ HTML;
 		else $all_xf_content = "";
 
 		if( $empty_full ) {
-			$social_tags['description'] = clear_content( $row['full_story']." ".$all_xf_content, 300, false );
+			$social_tags['description'] = htmlspecialchars( clear_content( $row['full_story']." ".$all_xf_content, 300, false ), ENT_QUOTES, $config['charset'] );
 		} else {
-			$social_tags['description'] = clear_content( $row['full_story']." ".$row['short_story']." ".$all_xf_content, 300, false );
+			$social_tags['description'] = htmlspecialchars( clear_content( $row['full_story']." ".$row['short_story']." ".$all_xf_content, 300, false ), ENT_QUOTES, $config['charset'] );
 		}
 		
 		if( $config['schema_org'] ) {
@@ -2597,13 +2597,13 @@ HTML;
 		$tpl->set( '{full-story}', $row['full_story'] );
 
 		if ( preg_match( "#\\{full-story limit=['\"](.+?)['\"]\\}#i", $tpl->copy_template, $matches ) ) {
-			$tpl->set( $matches[0], clear_content($row['full_story'], $matches[1]) );
+			$tpl->set( $matches[0], htmlspecialchars( clear_content($row['full_story'], $matches[1]), ENT_QUOTES, $config['charset'] ) );
 		}
 		
-		$tpl->set( '{title}', str_replace("&amp;amp;", "&amp;", htmlspecialchars( $row['title'], ENT_QUOTES, $config['charset'] ) ) );
+		$tpl->set( '{title}', htmlspecialchars( $row['title'], ENT_QUOTES, $config['charset'] ) );
 		
 		if ( preg_match( "#\\{title limit=['\"](.+?)['\"]\\}#i", $tpl->copy_template, $matches ) ) {
-			$tpl->set( $matches[0], clear_content($row['title'], $matches[1]) );
+			$tpl->set( $matches[0], htmlspecialchars( clear_content($row['title'], $matches[1]), ENT_QUOTES, $config['charset'] ) );
 		}
 		
 		if( $config['user_in_news'] ) {
