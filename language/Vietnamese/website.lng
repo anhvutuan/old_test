@@ -1,0 +1,1126 @@
+<?php
+
+$lang = array (
+
+'language_code'		    =>  "vi",
+'direction'		        =>  "ltr",
+
+// 17.2
+'ajax_edit_cat'          => "Chuyên mục:",
+'group_change_1'         => "Thời gian của bạn trong nhóm <b>{oldgroup}</b> đã hết hạn. Bạn đã được chuyển sang nhóm <b>{newgroup}</b>.",
+'group_change_2'         => "Bạn đã xuất bản {count} bài viết, do đó bạn đã được chuyển từ nhóm <b>{oldgroup}</b> sang nhóm mới <b>{newgroup}</b>.",
+'group_change_3'         => "Bạn đã đăng {count} bình luận, do đó bạn đã được chuyển từ nhóm <b>{oldgroup}</b> sang nhóm mới <b>{newgroup}</b>.",
+'group_change_4'         => "Theo đánh giá bài viết mới của bạn, bạn đã được chuyển từ nhóm <b>{oldgroup}</b> sang nhóm mới <b>{newgroup}</b>.",
+'group_change_5'         => "Theo đánh giá bình luận mới của bạn, bạn đã được chuyển từ nhóm <b>{oldgroup}</b> sang nhóm mới <b>{newgroup}</b>.",
+'addnews_xf_alert_2'     => "Trường <b>{field}</b> phải chứa ít nhất <b>{count}</b> ký tự",
+'addnews_xf_alert_3'     => "Trường <b>{field}</b> phải chứa không quá <b>{count}</b> ký tự",
+'error_complaint_5'      => "Bạn đã vượt quá số lượng khiếu nại tối đa có thể gửi đến quản trị viên vào thời điểm này. Chúng tôi xin lỗi vì sự bất tiện này và mong bạn kiên nhẫn trong khi chúng tôi xử lý các khiếu nại đã được gửi từ tài khoản của bạn. Cảm ơn bạn đã thông cảm",
+'error_complaint_6'      => "Đối với nhóm <b>'{group}'</b> của bạn, quản trị viên cấm gửi khiếu nại",
+// 17.2
+
+// 17.1
+'comm_placeholder'      => "Vui lòng viết nội dung bình luận của bạn.",
+'comm_a_placeholder'    => "Tên tác giả của bình luận",
+'error_complaint_4'     => "Bạn chưa cung cấp nội dung khiếu nại của mình.",
+// 17.1
+
+// 17.0
+'attach_images'         => "Đính kèm hình ảnh",
+'self_delete_1'         => "Bạn có thực sự muốn xóa tài khoản và tất cả dữ liệu của bạn khỏi trang web này không? Hành động này không thể hoàn tác.",
+'self_delete_2'         => "Để xác nhận xóa tài khoản của bạn, bạn cần nhập mật khẩu từ tài khoản của bạn:",
+'self_delete_3'         => "Xóa tài khoản",
+'self_delete_4'         => "Yêu cầu mật khẩu",
+'self_delete_5'         => "Tài khoản của bạn và tất cả dữ liệu đã được xóa khỏi trang web.",
+'self_delete_6'         => "Yêu cầu xóa tài khoản của bạn đã được gửi đến quản trị viên trang web. Nó sẽ được xử lý bởi quản trị viên trang web.",
+// 17.0
+
+// 16.1
+'twofactor_auth_1'      => "Tắt",
+'twofactor_auth_2'      => "Mã PIN một lần qua E-Mail",
+'twofactor_auth_3'      => "Mã PIN Google Authenticator một lần",
+'twofactor_auth_4'      => "Bạn bật xác thực hai yếu tố bằng cách sử dụng mật khẩu một lần trong Google Authenticator. Bạn cần tải xuống ứng dụng này hoặc bất kỳ ứng dụng nào khác tương thích với OTP để xác thực vào điện thoại thông minh của mình. Sau đó quét mã QR được chỉ định trong ứng dụng này.",
+'twofactor_auth_5'      => "Nhập mã PIN từ ứng dụng để tạo liên kết với trang web:",
+'twofactor_err_6'       => "Mã PIN nhập không chính xác",
+'twofactor_alert_1'     => "Bạn đã bật xác thực hai yếu tố cho tài khoản của mình. Để đăng nhập vào trang web, bạn cần nhập mã PIN một lần từ ứng dụng:",
+'twofactor_ok'          => "Xác thực hai yếu tố đã được bật.",
+'add_ok_4'              => "Bài viết đã được chỉnh sửa thành công.",
+'sort_by_edate'         => "ngày thay đổi",
+'xfield_xfvideo'        => "Tải lên tệp video",
+'xfield_xfaudio'        => "Tải lên tệp âm thanh",
+'download_error'        => "Quản trị viên trang web chỉ được phép tải xuống không quá {count} tệp mỗi ngày. Bạn có thể tải xuống tệp này vào ngày mai.",
+// 16.1
+
+// 16.0
+'error_max_queue'       => "Đã vượt quá số lượng tệp tối đa cho phép tải lên",
+'add_err_12'            => "Bạn không có quyền chỉnh sửa bài viết này.",
+'title_editnews'        => "Chỉnh sửa bài viết",
+'hours_diffs'           => "giờ|giờ",
+'minutes_diffs'         => "phút|phút",
+'time_diffs'            => "trở lên",
+'now_diffs'             => "Bây giờ",
+'diffs_format'          => "{date} lúc {time}",
+'user_says'             => "nói:",
+'thumb_imageerror'      => "Không tải được hình ảnh",
+'thumb_fullscreen'      => "Chế độ toàn màn hình",
+'thumb_thtoggle'        => "Bật / Tắt hình thu nhỏ",
+'thumb_thzoom'          => "Tăng / Giảm",
+'thumb_thdownload'      => "Tải hình ảnh",
+// 16.0
+
+// 15.3
+'media_upload_st_5'		=>	"Kéo và thả hình ảnh vào đây",
+'subscribe_info_4'		=>	"Bạn có thực sự muốn hủy đăng ký bình luận về bài viết này không?",
+'subscribe_info_5'		=>	"Bạn đã hủy đăng ký bình luận về bài viết này thành công",
+// 15.3
+
+// 15.2
+'news_info_9'			=>	"Khả năng bình luận về bài viết này đã bị vô hiệu hóa.",
+// 15.2
+
+// 15.1
+'error_complaint_3'		=>	"Độ dài tối đa của một khiếu nại không thể quá 2.000 ký tự.",
+'fav_plus_err_1'		=>  "Bài viết đã được thêm vào dấu trang của bạn.",
+'fav_plus_err_2'		=>  "Bài viết vẫn đang chờ phê duyệt của người điều hành và không thể thêm vào dấu trang của bạn.",
+'duplicate_protect'		=>	"Dữ liệu đã được gửi thành công.",
+// 15.1
+
+// 15.0
+'file_not_image'		=>	"Chỉ cho phép tải lên các tệp JPG, PNG, GIF, BMP hoặc WebP.",
+// 15.0
+
+// 14.3
+'req_field_1'			=>	"Điền vào trường tên",
+'req_field_2'			=>	"Điền vào trường tin nhắn",
+'req_field_3'			=>	"Điền vào trường chủ đề của tin nhắn",
+'share_i_1'				=>	"Chia sẻ liên kết đến văn bản đã chọn",
+'share_i_2'				=>	"Twitter",
+'share_i_3'				=>	"Facebook",
+'share_i_4'				=>	"Вконтакте",
+'share_i_5'				=>	"Liên kết trực tiếp:",
+'share_i_6'				=>	"Nhấp chuột phải và chọn «Sao chép liên kết»",
+// 14.3
+
+// 14.2
+'pm_err_12'				=>	"Đăng nhập vào tài khoản của bạn để đọc tin nhắn",
+'pm_err_13'				=>	"Chỉ người dùng đã đăng ký mới có thể sử dụng tin nhắn riêng tư. Đăng nhập vào tài khoản của bạn hoặc đăng ký, nếu bạn chưa đăng ký.",
+// 14.2
+
+// 14.1
+'pm_err_11' 			=>   "Không thể gửi tin nhắn vì người nhận không được phép sử dụng tin nhắn cá nhân trên trang web.",
+'reg_err_45'         	=>   "Tài khoản trên mạng xã hội này hiện đang được liên kết với tài khoản khác <b>{login}</b> trên trang web. Đăng nhập vào trang web bằng tài khoản này, hủy liên kết trong hồ sơ của bạn, sau đó bạn có thể liên kết lại tài khoản trong hồ sơ của mình với tài khoản mới.",
+'reg_err_46'        	=>   "Bạn không đăng nhập vào trang web, do đó không thể liên kết tài khoản hợp lệ",
+'reg_err_47'         	=>   "Tài khoản của bạn không được liên kết với mạng xã hội. Vui lòng liên hệ với quản trị viên trang web của bạn để giải quyết vấn đề này.",
+'social_attach_ok' 		=>   "Tài khoản của bạn đã được liên kết thành công với tài khoản mạng xã hội {social}. Bạn có thể sử dụng nó để đăng nhập vào trang web.",
+'social_attach_ok_1' 	=> 	 "Tài khoản của bạn đã được liên kết với tài khoản mạng xã hội {social}. Bạn có thể sử dụng nó để đăng nhập vào trang web.",
+'del_from_social' 		=>   "Bạn có chắc chắn muốn hủy liên kết mạng xã hội này với tài khoản của bạn trên trang web không?",
+'del_from_social_1' 	=>   "Hủy liên kết mạng xã hội này với tài khoản của bạn trên trang web.",
+'addnews_xf_alert_1' 	=>   "Trường <b>{field}</b> là bắt buộc",
+// 14.1
+
+// 14.0
+'January'				=>	"Tháng 1",
+'February'				=>	"Tháng 2",
+'March'					=>	"Tháng 3",
+'April'					=>	"Tháng 4",
+'May'					=>	"Tháng 5",
+'June'					=>	"Tháng 6",
+'July'					=>	"Tháng 7",
+'August'				=>	"Tháng 8",
+'September'				=>	"Tháng 9",
+'October'				=>	"Tháng 10",
+'November'				=>	"Tháng 11",
+'December'				=>	"Tháng 12",
+'emoji_smileys_people'	=>	"Biểu tượng cảm xúc và con người",
+'emoji_animals_nature'	=>	"Biểu tượng cảm xúc động vật và thiên nhiên",
+'emoji_food_drink'		=>	"Biểu tượng cảm xúc về đồ ăn và thức uống",
+'emoji_activities'		=>	"Biểu tượng cảm xúc hoạt động",
+'emoji_travel_places'	=>	"Biểu tượng cảm xúc về du lịch và địa điểm",
+'emoji_objects'			=>	"Biểu tượng cảm xúc về đồ vật",
+'emoji_symbols'			=>	"Biểu tượng cảm xúc về biểu tượng",
+'emoji_flags'			=>	"Biểu tượng cảm xúc về quốc kỳ",
+'emoji_last'			=>	"Biểu tượng cảm xúc đã sử dụng gần đây",
+'enable_lastviewed'		=>	"Để hiển thị khối này, vui lòng bật lịch sử của các bài đăng đã xem gần đây trong cài đặt script trên bảng quản trị",
+'tinyapi_error'			=>	"Bạn đã bật xử lý hình ảnh trong TinyPNG. Có lỗi khi xử lý hình ảnh",
+'player_play'			=>	"Phát",
+'player_pause'			=>	"Tạm dừng",
+'player_prev'			=>	"Trước đó",
+'player_next'			=>	"Tiếp theo",
+'player_mute'			=>	"Tắt tiếng",
+'player_unmute'			=>	"Bật tiếng",
+'player_settings'		=>	"Cài đặt",
+'player_fullscreen'		=>	"Bật chế độ toàn màn hình",
+'player_efullscreen'	=>	"Tắt chế độ toàn màn hình",
+'player_speed'			=>	"Tốc độ",
+'player_normal'			=>	"Bình thường",
+'player_quality'		=>	"Chất lượng",
+'player_pip'			=>	"Chế độ PiP",
+// 14.0
+
+// 13.3
+'complaint_title'		=>	"Gửi khiếu nại",
+'add_err_11'			=>	"Đã có một bài viết khác cùng tên URL trên trang web. Vui lòng thay đổi tên URL.",
+'upload_error_7'		=>	"Hình ảnh tải lên không thể nhỏ hơn {minsize} pixel.",
+// 13.3
+
+// 13.2
+'recaptcha_fail'		=>	"Kiểm tra rằng bạn không phải là robot không đạt yêu cầu",
+// 13.2
+
+// 13.1
+'xf_img_descr'			=>	"Mô tả",
+'like_dislike_sum'		=>	"Thích: {likes}, Không thích: {dislikes}, Tổng kết: {rating}",
+// 13.1
+
+// 13.0
+'send_pm'				=>	"Tin nhắn riêng:",
+'send_pm_1'				=>	"Chủ đề",
+'send_pm_2'				=>	"Lưu tin nhắn trong thư mục \"Đã gửi\"",
+// 13.0
+
+// 12.1
+'rules_page'			=>	"Quy định của trang web",
+'xfield_xhtmljs_2'		=>	"Xem trước trường này không khả dụng vì lý do bảo mật",
+// 12.1
+
+// 12.0
+'enter_n_pass'			=>	"Yêu cầu xác nhận mật khẩu",
+'enter_n_pass_1'		=>	"Để xem bài viết này, bạn phải nhập mật khẩu do quản trị viên thiết lập cho bài viết này",
+'enter_n_pass_2'		=>	"Mật khẩu:",
+'enter_n_pass_3'		=>	"Gửi",
+'enter_n_pass_4'		=>	"<b>Mật khẩu không hợp lệ cho bài viết</b>",
+// 12.0
+
+// 11.3
+'sess_error'			=> "Phiên người dùng của bạn đã hết hạn. Vui lòng làm mới trang và đăng nhập nếu cần.",
+'feed_error_1'			=> "Mẫu <b>{name}</b> bạn yêu cầu không được tìm thấy.",
+// 11.3
+
+// 11.2
+'twofactor_auth'		=>	"Bật xác thực hai yếu tố (mã PIN một lần được gửi đến địa chỉ email)",
+'twofactor_alert'		=>	"Bạn đã bật xác thực hai yếu tố cho tài khoản của mình. Mã PIN một lần đã được gửi đến địa chỉ email của bạn. Bạn cần nhập mã PIN một lần này để đăng nhập:",
+'twofactor_title'		=>	"Nhập mã PIN một lần ",
+'twofactor_subj'		=>	"Mã PIN một lần cho xác thực",
+'twofactor_err_1'		=>	"Trước khi nhập mã PIN một lần, bạn phải đăng nhập bằng tên người dùng và mật khẩu của mình",
+'twofactor_err_2'		=>	"Bạn chưa nhập mã PIN một lần",
+'twofactor_err_3'		=>	"Thông tin đăng nhập không hợp lệ. Tải lại trang này và nhập tên người dùng và mật khẩu của bạn.",
+'twofactor_err_4'		=>	"Thời gian hiệu lực của mã PIN một lần đã hết hạn. Mã PIN chỉ có thể được sử dụng trong vòng 15 phút sau khi yêu cầu.",
+'twofactor_err_5'		=>	"Mã PIN không hợp lệ. Còn {attempt} lần thử.",
+'subscribe_err_1'		=>	"Bạn không được phép đăng ký nhận bình luận",
+'subscribe_err_2'		=>	"Lỗi xác thực người dùng. Vui lòng tải lại trang này.",
+'subscribe_err_3'		=>	"Bạn không được phép đăng ký nhận bình luận về bài viết này",
+'subscribe_info_1'		=>	"Bạn đã đăng ký nhận bình luận về bài viết này thành công",
+'subscribe_info_2'		=>	"Bạn đã đăng ký nhận bình luận về bài viết này",
+'subscribe_info_3'		=>	"Bạn có thực sự muốn đăng ký nhận bình luận về bài viết này?",
+'mail_file_err_1'		=>	"Bạn không thể tải lên tệp. Có thể chúng quá lớn.",
+'mail_file_err_2'		=>	"Tệp {file} không thể tải lên. Bạn chỉ có thể tải lên tệp hợp lệ với phần mở rộng {ext}",
+'mail_file_err_3'		=>	"Kích thước tối đa của tệp đính kèm trong một bức thư, không được vượt quá {size} kilobyte.",
+'mail_file_err_4'		=>	"Số lượng tối đa của các tệp đính kèm chỉ có thể là: {maxfiles}",
+// 11.2
+
+// 11.1
+'bb_url_video'			=> "URL video:",
+'bb_url_audio'			=> "URL âm thanh:",
+'bb_url_poster'			=> "URL hình thu nhỏ video:",
+'bb_descr'			    => "Mô tả:",
+'button_insert'			=> "Chèn",
+'button_addplaylist'	=> "Thêm vào danh sách phát",
+'xfield_xfimg'			=>	"Tải lên hình ảnh",
+'n_unsubscribe_ok'		=>	"Bạn đã hủy đăng ký nhận email từ trang web này thành công.",
+'n_unsubscribe_err'		=>	"URL này không hợp lệ. Không thể hủy đăng ký nhận email từ trang web này. Xác minh rằng URL nhập vào thanh địa chỉ là chính xác bằng cách kiểm tra với URL nhận được trong thư.",
+'news_subscribe'		=>	"Nhận thông báo qua email về bình luận mới cho bài viết của tôi",
+'comments_reply_subscribe'	=>	"Nhận thông báo qua email về trả lời bình luận của tôi",
+'news_unsubscribe'		=>	"Bạn đã đăng ký nhận bình luận về {subscribed} [declination={subscribed}]bài viết|bài viết|bài viết|bài viết[/declination]",
+'news_unsubscribe_1'	=>	"Hủy đăng ký tất cả bài viết",
+// 11.1
+
+// 11.0
+'media_upload_st5'		=>	"Kéo tệp vào đây để tải lên",
+'media_upload_st6'		=>	"Đang tải tệp lên:",
+'media_upload_st8'		=>	"từ",
+'media_upload_st9'		=>	"hoàn tất thành công",
+'media_upload_st10'		=>	"thất bại",
+'media_upload_st11'		=>	"{file} có phần mở rộng sai. Chỉ {extensions} được phép tải lên.",
+'media_upload_st12'		=>	"{file} quá lớn. Kích thước tối đa là: {sizeLimit}.",
+'media_upload_st13'		=>	"{file} trống. Chọn tệp khác.",
+'xfield_xfim'			=>	"Tải lên hình ảnh",
+'xfield_xfif'			=>	"Tải lên tệp",
+'xfield_xfid'			=>	"Xóa",
+'image_delete'			=>	"Bạn có chắc chắn muốn xóa hình ảnh này không?",
+'file_delete'			=>	"Bạn có chắc chắn muốn xóa tệp này không?",
+'xfield_xyes'			=>	"Có",
+'xfield_xno'			=>	"Không",
+'feedback_not_reg'		=>	"Người dùng chưa đăng ký",
+'c_not_reg'				=>	"Khách",
+'enter_login'			=>	"Xác nhận tên người dùng",
+'enter_login1'			=>	"Thân gửi <b>{name}</b>,<br /><br />tên người dùng của bạn đã được lấy tự động từ mạng xã hội của bạn. Tuy nhiên, bạn có thể chỉ định tên người dùng khác để sử dụng trên trang web của chúng tôi.",
+'enter_login2'			=>	"Tên người dùng của bạn:",
+'enter_login3'			=>	"Xác nhận tên người dùng",
+'enter_login4'			=>	" Lưu ý rằng bạn chỉ có thể đặt tên người dùng một lần, vì vậy hãy cẩn thận.",
+'reg_err_44'			=>	"<li> Người dùng với tên người dùng này đã được đăng ký. Vui lòng chọn tên người dùng khác. </li>",
+'add_err_10'			=>	"Bài viết này không chờ phê duyệt và không thể chỉnh sửa trong phần này của trang web. Tại đây, bạn chỉ có thể chỉnh sửa các bài viết đang chờ phê duyệt.",
+'comments_empty'		=>	"Bình luận bị ẩn",
+// 11.0
+
+// 10.6
+'rating_error1'		=>	"Bạn không thể đánh giá bài viết của mình",
+'rating_error2'		=>	"Bạn đã đánh giá bài viết này",
+'rating_error3'		=>	"Bạn không được phép đánh giá",
+'rating_error4'		=>	"Bạn không thể đánh giá bình luận của mình",
+'rating_error5'		=>	"Bạn đã đánh giá bình luận này",
+'bb_t_sub'			=>	"Văn bản dưới chỉ số",
+'bb_t_sup'			=>	"Văn bản trên chỉ số",
+// 10.6
+
+// 10.5
+'reply_comments'	=>	"Trả lời bình luận",
+'reply_comments_1'	=>	"Trả lời",
+'reply_error_1'		=>	"Bạn không thể trả lời bình luận này",
+'reply_error_2'		=>	"Không tìm thấy bình luận",
+'reply_descr'		=>	"Nhập câu trả lời của bạn cho bình luận",
+'reply_name'		=>	"Tên của bạn:",
+'reply_mail'		=>	"Email của bạn:",
+'question_hint'		=>	"Để bảo vệ chống spam, bạn phải nhập câu trả lời cho câu hỏi",
+'captcha_hint'		=>	"Nhập mã",
+'news_err_46'		=>	"Rất tiếc, bình luận của bạn không thể được đăng vì dịch vụ Clear Web của Yandex đã phát hiện dấu hiệu spam trong văn bản bình luận của bạn.",
+'poll_count'		=>	"Tổng số phiếu bầu:",
+// 10.5
+
+// 10.4
+'reg_err_41'        =>  "Quản trị viên trang web đã bật xác thực bằng tài khoản mạng xã hội. Đăng ký trên trang web bị vô hiệu hóa.",
+'bb_url_tooltip'	=>	"Nhập chú thích cho liên kết.",
+'wait_subj'			=>	"Liên kết tài khoản trang web với tài khoản mạng xã hội",
+'reg_err_42'        =>  "Bạn đã đăng ký bằng địa chỉ email của mình trên trang web của chúng tôi. Người dùng này thuộc nhóm Quản trị viên, do đó tài khoản này không thể liên kết với xác thực qua mạng xã hội.",
+'reg_err_43'        =>  "Liên kết tài khoản chưa hoàn tất. Liên kết để liên kết tài khoản chỉ có hiệu lực một lần.",
+'auth_next'			=>	"Tiếp tục xác thực",
+'auth_social_ok'	=>	"Liên kết tài khoản hoàn tất thành công. Bạn có thể tiếp tục xác thực bằng cách nhấp vào liên kết sau:",
+// 10.4
+
+// 10.3
+'system_default'	=>	"Cài đặt hệ thống mặc định",
+'social_err_1'		=>	"Không thể kết nối với mạng xã hội. Không thể lấy dữ liệu người dùng. Secret Key không chính xác hoặc kết nối ra ngoài bị hạn chế trên máy chủ.",
+'social_err_2'		=>	"Mạng xã hội không được hỗ trợ.",
+'social_err_3'		=>	"Không thể lấy dữ liệu người dùng từ mạng xã hội.",
+'social_login_ok'	=>	"Bạn đã đăng nhập thành công. Bây giờ bạn sẽ được tự động chuyển đến trang web. Nếu điều này không xảy ra, hãy đóng cửa sổ và khởi động lại trang web.",
+'reg_err_36'        =>  "Bạn đã đăng ký trước đó bằng email của mình trên trang web của chúng tôi, trực tiếp hoặc sử dụng các mạng xã hội khác. Đăng nhập bằng tên người dùng và mật khẩu của bạn. Nếu bạn không nhớ mật khẩu, hãy thực hiện khôi phục mật khẩu trên trang web.",
+'reg_err_37'        =>  "Bạn cần nhập địa chỉ email của mình để đăng nhập vào trang web:",
+'reg_err_38'        =>  "Địa chỉ này đã được người dùng khác sử dụng. Vui lòng nhập địa chỉ khác.",
+'reg_err_39'        =>  "Có vấn đề với công việc của phiên PHP trên máy chủ của bạn. Bạn cần liên hệ với hỗ trợ lưu trữ của bạn, để kiểm tra chức năng của phiên PHP.",
+'reg_err_40'        =>  "Không thể lấy địa chỉ email của bạn từ mạng xã hội mà bạn đang cố gắng đăng nhập. Địa chỉ email là cần thiết để đăng nhập vào trang web. Thiết lập khả dụng của nó trong cài đặt của mạng xã hội của bạn.",
+'social_next'       =>  "Tiếp tục",
+'fav_plus'     	    =>  "Bài viết đã được thêm vào mục yêu thích của bạn thành công",
+'fav_minus'     	=>  "Bài viết đã được xóa khỏi mục yêu thích của bạn thành công",
+// 10.3
+
+// 10.2
+'bb_b_approve'		=>	"Lưu và xuất bản.",
+// 10.2
+
+// 10.1
+'lost_err_2'		=>	"Người dùng có quyền truy cập vào bảng điều khiển trang web, chỉ có thể khôi phục mật khẩu của họ trong bảng điều khiển trang web. Truy cập bảng điều khiển và khôi phục mật khẩu của bạn.",
+'reg_err_35'       	=>  "Xin lỗi, bạn không thể đăng ký trên trang web của chúng tôi. Đã nhận thấy rằng địa chỉ email của bạn đã được sử dụng để gửi thư rác.",
+// 10.1
+
+// 10.0
+'static_page_err'	=>	"Xin lỗi, trang {page} không có sẵn cho bạn: địa chỉ của nó có thể đã thay đổi hoặc nó đã bị xóa. Vui lòng sử dụng tìm kiếm.",
+'p_del'				=>	"Xóa",
+'mail_complaint'	=>  "Thông báo khiếu nại mới",
+'mail_complaint_1'	=>  "Thông báo này được gửi từ trang web: {site}\n\nChúng tôi thông báo rằng bạn đã nhận được khiếu nại mới từ khách truy cập trang web của bạn.\n\nĐể xem khiếu nại và thực hiện hành động với chúng, bạn phải đăng nhập vào bảng điều khiển của trang web và truy cập 'Danh sách khiếu nại'.",
+'reg_err_28'        =>  "Xin lỗi, bạn không thể đăng ký trên trang web của chúng tôi. Đã nhận thấy rằng địa chỉ email của bạn đã được sử dụng để gửi thư rác. Nếu bạn chưa từng tham gia vào việc gửi thư rác, thì địa chỉ IP của bạn đã được sử dụng trước đó bởi những kẻ gửi thư rác. Yêu cầu nhà cung cấp dịch vụ Internet của bạn thay đổi địa chỉ IP của bạn và bạn sẽ có thể đăng ký trên trang web của chúng tôi.",
+'reg_err_29'        =>  "Xin lỗi, bạn không thể đăng bình luận. Đã nhận thấy rằng địa chỉ email của bạn đã được sử dụng để gửi thư rác. Nếu bạn chưa từng tham gia vào việc gửi thư rác, thì địa chỉ IP hoặc email của bạn đã được sử dụng trước đó bởi những kẻ gửi thư rác. Yêu cầu nhà cung cấp dịch vụ Internet của bạn thay đổi địa chỉ IP của bạn và bạn sẽ có thể đăng ký trên trang web của chúng tôi.",
+'reg_err_34'        =>  "<li> Xin lỗi, bạn không thể gửi tin nhắn. Đã nhận thấy rằng địa chỉ email của bạn đã được sử dụng để gửi thư rác. Nếu bạn chưa từng tham gia vào việc gửi thư rác, thì địa chỉ IP hoặc email của bạn đã được sử dụng trước đó bởi những kẻ gửi thư rác. Yêu cầu nhà cung cấp dịch vụ Internet của bạn thay đổi địa chỉ IP của bạn và bạn sẽ có thể đăng ký trên trang web của chúng tôi.</li>",
+// 10.0
+
+// 9.8
+'mark_spam'			=>	"Bạn có chắc chắn muốn đánh dấu người dùng là người gửi thư rác không? Điều này sẽ xóa tất cả bình luận của họ",
+// 9.8
+
+// 9.7
+'paste_text'		=>	"Dán dưới dạng văn bản thuần",
+'bb_t_yvideo'		=>	"Phát video từ các dịch vụ video",
+'reg_err_26'        =>  "Quản trị viên trang web đã cấm đăng ký nhiều tài khoản trên trang web bằng cùng một địa chỉ IP. Địa chỉ IP của bạn đã được sử dụng trên một tài khoản khác.",
+'reg_err_27'        =>  "Bạn đã đăng nhập bằng tài khoản đã đăng ký này.",
+// 9.7
+
+// 9.6
+'pm_progress_bar'	=>	"Kích thước của các thư mục tin nhắn cá nhân là:",
+'no_pm_limit'		=>	"không giới hạn",
+'pm_set_read'		=>	"Đánh dấu là đã đọc",
+'pm_set_unread'		=>	"Đánh dấu là chưa đọc",
+'s_fshort'			=>	"Tóm tắt bài viết:",
+'s_ffull'			=>	"Bài viết đầy đủ:",
+'bb_t_t'			=>	"Kiểu chữ",
+// 9.6
+
+// 9.5
+'news_err_45'		=>	"Hiện tại, bạn đã vượt quá giới hạn số lượng bình luận mà bạn được phép đăng trên trang web mỗi ngày. Số lượng bình luận của bạn mỗi ngày là: <b>{max}</b>",
+'images_align'		=>	"Căn chỉnh",
+'images_left'		=>	"Trái",
+'images_right'		=>	"Phải",
+'images_center'		=>	"Giữa",
+'images_none'		=>	"Không",
+'bb_alt_image'		=>	"Nhập mô tả hình ảnh",
+'bb_t_audio'		=>	"Chèn bản nhạc âm thanh (mp3)",
+'bb_t_color'		=>	"Chọn màu",
+'bb_t_spoiler'		=>	"Chèn spoiler",
+'bb_t_flash'		=>	"Chèn phim flash",
+'bb_t_youtube'		=>	"Chèn nội dung phương tiện từ các dịch vụ khác",
+'bb_t_list1'		=>	"Chèn danh sách",
+'bb_t_list2'		=>	"Chèn danh sách đánh số",
+'s_fword'			=>	"Khớp chính xác tất cả các từ",
+'addnews_cat_sel'	=>	"Chọn chuyên mục...",
+// 9.5
+
+// 9.4
+'p_save'			=>	"Lưu",
+'n_save_ok'			=>	"Thay đổi đã được lưu thành công. Làm mới trang?",
+'addnews_xf_alert'	=>	"Các trường bổ sung bắt buộc đang trống",
+'editnews_error'	=>	"Bạn không có quyền chỉnh sửa bài viết này.",
+'login_metod'		=>	"Đăng nhập:",
+'login_err_3'		=>	"Chú ý! Đăng nhập vào trang web không thành công. Email hoặc mật khẩu không hợp lệ.",
+'xf_notig'			=>	"bắt buộc",
+'anti_modified'		=>  "không khớp với ảnh chụp được chụp",
+'anti_not'			=>  "không rõ cho bộ phân phối",
+'anti_subj'			=>  "Kết quả quét chống vi-rút cho trang web của bạn",
+'anti_message_1'	=>  "Quét để phát hiện các tệp không xác định hoặc đã bị sửa đổi đã được thực hiện theo cài đặt cron của bạn. Các tệp đáng ngờ sau đã được phát hiện dựa trên kết quả quét:",
+'anti_message_2'	=>  "Nên xóa các tệp không xác định và kiểm tra các tệp đã sửa đổi. Nếu bạn không thực hiện thay đổi đối với các tệp của script đã được sửa đổi, hãy khôi phục các tệp script gốc. Nếu đây là thay đổi của bạn, hãy chụp lại ảnh chụp của các tệp trong Bảng Quản trị của script.",
+'big_text'			=>  "Phần văn bản được đánh dấu quá lớn.",
+'orfo_title'		=>  "Nhập bình luận cho lỗi được phát hiện trên trang để quản trị ",
+'reg_err_24'        =>  "Bạn đã nhập câu trả lời sai cho câu hỏi bảo mật",
+'reg_err_25'        =>  "<li>Bạn đã nhập câu trả lời sai cho câu hỏi bảo mật</li>",
+// 9.4
+
+// 9.3
+'change_mail_subj'	=>	"Yêu cầu thay đổi địa chỉ email",
+'change_mail'		=>	"<li> Thân gửi khách truy cập! Bạn đã thay đổi địa chỉ email của mình. Quản trị viên trang web yêu cầu xác minh tất cả địa chỉ email. Bạn sẽ nhận được email với hướng dẫn cho bước tiếp theo trong 10 phút (có thể sớm hơn). Nếu bạn không nhận được xác nhận trong khoảng thời gian này, rất có thể, nó đã rơi vào thư mục spam. Vui lòng kiểm tra nội dung của thư mục này. Nếu không, hãy thử lại bằng địa chỉ email khác hoặc liên hệ với Quản trị viên trang web.</li>",
+'change_mail_1'		=>	"Thân gửi {name}! Yêu cầu thay đổi địa chỉ email của bạn thành:",
+'change_mail_2'		=>	"đã được chấp nhận.",
+'change_mail_3'		=>	"Nhấp vào liên kết để thay đổi địa chỉ email trên trang web:",
+'change_mail_4'		=>	"Bạn không đăng nhập. Bạn phải đăng nhập vào trang web bằng tên người dùng và mật khẩu của mình, sau đó nhấp vào liên kết này để thay đổi địa chỉ email.",
+'change_mail_5'		=>	"Không thể thay đổi địa chỉ. Bạn đang đăng nhập bằng tên người dùng khác hoặc người dùng này không yêu cầu thay đổi email của họ trên trang web.",
+'change_mail_6'		=>	"Email của bạn đã được thay đổi thành công.",
+'news_info_7'		=>	"Quản trị viên trang web đã cấm thêm bài viết trong vòng {days} ngày sau khi đăng ký trên trang web.",
+'news_info_8'		=>	"Quản trị viên trang web đã cấm thêm bình luận trong vòng {days} ngày sau khi đăng ký trên trang web.",
+'vote_not_allow'	=>	"Bạn không thể bỏ phiếu trong các cuộc thăm dò và bỏ phiếu trên trang web.",
+'add_to_ignore'		=>	"Bạn có chắc chắn muốn thêm người gửi vào danh sách bỏ qua không?",
+'ignore_error'		=>	"Bạn không thể bỏ qua chính mình.",
+'ignore_error_1'	=>	"Người gửi này đã có trong danh sách bỏ qua của bạn.",
+'ignore_error_2'	=>	"Bạn không thể bỏ qua người dùng từ các nhóm quản trị.",
+'ignore_ok'			=>	"Người gửi đã được thêm vào danh sách bỏ qua. Bạn sẽ không nhận được tin nhắn cá nhân từ người dùng này nữa. Bạn có thể bỏ chặn người dùng này trong hồ sơ của bạn trên trang web",
+'del_from_ignore'	=>	"Bạn có chắc chắn muốn xóa người dùng này khỏi danh sách bỏ qua không?",
+'del_from_ignore_1'	=>	"Xóa người dùng khỏi danh sách bỏ qua.",
+'ignore_del_ok'		=>	"Người dùng đã được xóa khỏi danh sách bỏ qua thành công.",
+'pm_ignored'		=>	"Bạn đang trong danh sách bỏ qua của người dùng này. Tin nhắn của bạn không thể được gửi.",
+'add_to_complaint'	=>	"Nhập nội dung khiếu nại của bạn đến Quản trị viên:",
+'error_complaint_1'	=>	"Bạn đã gửi thông báo cho Quản trị viên.",
+'error_complaint_2'	=>	"Bạn không thể gửi khiếu nại chống lại chính mình.",
+// 9.3
+
+// 9.2
+'newpost_notfound'	=>	"Không tìm thấy bài viết chưa đọc.",
+'all_votes'			=>	"Danh sách tất cả các cuộc bỏ phiếu trên trang web:",
+'vote_disable'		=>	"Cuộc bỏ phiếu đã kết thúc",
+'vote_disable_1'	=>	"Bạn đã tham gia cuộc bỏ phiếu này",
+'max_votes'			=>	"Tổng số phiếu bầu:",
+'vote_ok'			=>	"Cảm ơn bạn. Phiếu bầu của bạn đã được chấp nhận.",
+'bb_list_item'		=>  "Nhập một mục danh sách. Để trống trường này để thoát khỏi cuộc bỏ phiếu.",
+'message_pm_4'		=>	"Thông báo về việc xác minh bài viết ",
+'message_pm_5'		=>	"đã được xác minh bởi người điều hành:",
+'message_pm_6'		=>	"Người điều hành đã gửi cho bạn thông báo sau:",
+'btn_notice'		=>  "Thông báo cho tác giả",
+'p_send'			=>	"Gửi",
+'p_send_ok'			=>	"Thông báo đã được gửi thành công ",
+'p_text'			=>	"Nhập nội dung thông báo cho tác giả rằng họ sẽ nhận được dưới dạng tin nhắn cá nhân:",
+'p_message'			=>	"Có, và gửi thông báo ",
+// 9.2
+
+// 9.0
+'bb_t_col'			=>	"Màu sắc:",
+'add_comm'			=>	"Thêm bình luận",
+'p_info'			=>	"Thông tin",
+'p_confirm'			=>	"Xác nhận",
+'p_prompt'			=>	"Nhập thông tin",
+'p_user'			=>	"Người dùng: ",
+'p_yes'				=>	"Có",
+'p_no'				=>	"Không",
+'p_enter'			=>	"Nhập",
+'p_cancel'			=>	"Hủy bỏ",
+'news_err_42'		=>	"<li>Bạn có quyền truy cập quản trị, vì vậy bạn phải vào Bảng Quản trị để thay đổi địa chỉ email hoặc mật khẩu trên trang web. Bước này được thực hiện vì lý do bảo mật. Trong Bảng Quản trị, đi tới quản lý người dùng và tìm đăng nhập của bạn để thực hiện các thay đổi cần thiết</li>",
+'news_err_43'		=>	"Bạn chỉ có thể thêm bài viết này trong",
+'news_err_44'		=>	"Bạn đã đạt đến số lượng bài viết tối đa mà bạn được phép thêm trên trang web mỗi ngày.",
+'bb_t_upload'		=>	"Tải lên tệp",
+'message_pm'		=>	"Thông báo xóa bài viết ",
+'message_pm_1'		=>	"Bài viết của bạn",
+'message_pm_2'		=>	"đã bị xóa khỏi trang web bởi người điều hành:",
+'message_pm_3'		=>	"Người điều hành này đã chỉ định các lý do sau:",
+'fav_notfound_1'	=>	"Bạn không có mục yêu thích trên trang này. Quay lại trang trước.",
+'pm_err_10'			=>	"Bạn không thể gửi hơn {max} tin nhắn cá nhân mỗi ngày.",
+'feed_err_9'		=>	"<li>Bạn không thể gửi hơn {max} tin nhắn email mỗi ngày.</li>",
+'edit_selcomb'		=>	"Kết hợp bình luận",
+'login_err_2'		=>	"Cảnh báo! Bạn đã đạt đến số lần cố gắng đăng nhập không thành công tối đa vào trang web. Truy cập vào tài khoản này bị khóa trong 20 phút. Vui lòng thử lại sau. Nếu bạn quên mật khẩu của mình, bạn có thể thực hiện khôi phục mật khẩu trên trang web. Vui lòng khôi phục mật khẩu của bạn vào cuối thời gian chặn..",
+// 9.0
+
+// 8.5
+'preview_short'			=>	"Mô tả ngắn gọn:",
+'preview_full'			=>	"Mô tả đầy đủ:",
+'lost_send'			=>	"Thân gửi khách truy cập! Một mật khẩu mới đã được tạo theo yêu cầu của bạn. Mật khẩu này đã được gửi đến email của bạn:",
+'news_err_40'		=>	"Nội dung bình luận của bạn quá ngắn và không có thông tin hữu ích theo đánh giá của quản trị viên.",
+'news_err_41'		=>	"Bạn không được phép đăng bài viết trong phần này của trang web. Chọn một chuyên mục từ danh sách có sẵn.",
+'edit_selact'		=>	"-- Hành động --",
+'edit_seldel'		=>	"Xóa",
+'edit_rel'			=>	"Chỉnh sửa",
+'b_start'			=>	"Bắt đầu",
+'mass_comments'		=>	"Bình luận được chọn:",
+// 8.5
+
+// 8.3
+'lost_password'		=>	"Nhấp vào liên kết để khôi phục mật khẩu của bạn:",
+'lost_ip'			=>	"Nhấp vào liên kết để đặt lại chặn theo IP:",
+'lost_clear_ip'		=>	"Chặn theo IP đã được đặt lại",
+'lost_clear_ip_1'	=>	"Người dùng <b>{username}</b> đã được bỏ chặn thành công theo IP.",
+'lost_mfg'			=>	"Trân trọng,\nQuản trị viên trang web",
+'c_subscribe'		=>	"Đăng ký nhận bình luận",
+'admin'				=>	"Quản trị viên",
+'news_err_37'		=>	"Nội dung tin nhắn của bạn không được phép xuất bản.",
+'news_err_38'		=>	"Thông tin cá nhân hoặc chữ ký của bạn không được phép xuất bản.",
+'news_err_39'		=>	"Nội dung bài viết của bạn không được phép xuất bản.",
+'unsubscribe_ok'	=>	"Bạn đã hủy đăng ký nhận bình luận về bài viết này thành công.",
+'unsubscribe_err'	=>	"Bạn không đăng ký nhận bình luận về bài viết này.",
+'nav_trennen'		=>	"...",
+// 8.3
+
+// 8.2
+'thumb_playtitle'	=>	"Xem trình chiếu (space) ",
+'thumb_pausetitle'	=>	"Tạm dừng",
+'thumb_previoustitle'	=>	"Hình ảnh trước đó",
+'thumb_nexttitle'	=>	"Hình ảnh tiếp theo",
+'thumb_movetitle'	=>	"Di chuyển",
+'thumb_closetitle'	=>	"Đóng (Esc)",
+'nl_info_2'			=>	"Người dùng",
+'news_info_6'		=>	"Được phép bình luận về bài viết trong vòng <b>{days}</b> ngày kể từ ngày xuất bản.",
+'search_s_go'		=>	"đi đến trang",
+// 8.2
+
+// 8.0
+'feed_err_8'		=>	"<li>Bạn không thể gửi tin nhắn email cho người dùng này.</li>",
+'bb_flash'				=>	"Nhập kích thước của phim flash (chiều rộng, chiều cao) ",
+'bb_flash_url'			=>	"Nhập URL của phim flash ",
+'inset_flash_link'		=>	"chèn phim flash",
+// 8.0
+
+// 7.5
+'news_err_32'		=>	"<li>Quản trị viên trang web đã cấm tải lên hình đại diện cho nhóm của bạn.</li>",
+'not_allowed_sig'	=>	"<li>Chữ ký quá dài!</li>",
+'news_err_33'		=>	"Thẻ của tin nhắn này không được phép xuất bản.",
+'news_err_34'		=>	"Thẻ của thông tin cá nhân hoặc chữ ký của bạn không được phép xuất bản.",
+'tags_count'		=>	"Tìm thấy bài viết:",
+'news_err_35'		=>	"<li>Không thể xuất bản tên của bạn. Nó chứa các ký hiệu không được phép xuất bản.</li>",
+'news_err_36'		=>	"<li>Không thể xuất bản nơi cư trú của bạn. Nó chứa các ký hiệu không được phép xuất bản.</li>",
+// 7.5
+
+// 7.3
+'reg_err_30'		=>	"Tên người dùng không thể trống!",
+'reg_err_31'		=>	"Mật khẩu phải có ít nhất 6 ký tự!",
+'reg_err_32'		=>	"Cả hai trường phải chứa nội dung giống nhau!",
+'reg_err_33'		=>	"Địa chỉ email không chính xác!",
+'rss_user'			=>	"Theo dõi tất cả bài viết của người dùng bằng RSS",
+'show_archive'		=>	"Hiển thị/ẩn toàn bộ lưu trữ",
+'no_message'		=>	"Bạn không có tin nhắn cá nhân nào vào lúc này",
+'spoiler_title'		=>	" Hiển thị/ẩn văn bản",
+// 7.3
+
+// 7.2
+'news_info_2'		=>	"Quản trị viên trang web đã cấm để lại bình luận trên trang web này cho đến <b>{date}</b>. Việc chặn hoàn toàn tự động, và bạn không cần phải làm gì để tăng tốc hoặc dừng nó.",
+'news_info_3'		=>	"Quản trị viên trang web đã cấm để lại bình luận trên trang web này.",
+'news_info_4'		=>	"Quản trị viên trang web đã cấm đăng bài viết trên trang web này cho đến <b>{date}</b>. Việc chặn hoàn toàn tự động, và bạn không cần phải làm gì để tăng tốc hoặc dừng nó.",
+'news_info_5'		=>	"Quản trị viên trang web đã cấm đăng bài viết trên trang web này.",
+'loading'    	    =>	"Đang tải...",
+'mail_pm'	  		=>  "Tin nhắn cá nhân mới",
+'sort_main'	  		=>  "Sắp xếp bài viết theo:",
+'sort_by_date'	  	=>  "ngày",
+'sort_by_rating'	=>  "đánh giá",
+'sort_by_read'		=>  "đọc",
+'sort_by_title'		=>  "tiêu đề",
+'sort_by_comm'		=>  "bình luận",
+'rules_accept'		=>  "Chấp nhận",
+'rules_decline'		=>  "Từ chối",
+'reg_err_21'		=>	"<li>Quản trị viên trang web đã cấm sử dụng đăng nhập này{descr}</li>",
+'reg_err_22'		=>	", do: {descr}",
+'reg_err_23'		=>	"<li>Quản trị viên trang web đã cấm sử dụng email này{descr}</li>",
+'reason'			=>  "Chỉ định lý do chỉnh sửa:",
+'tag_cloud'			=>  "Đám mây thẻ",
+'last_news'			=>  "Bài viết mới nhất trên trang web",
+'all_tags'			=>  "Hiển thị tất cả thẻ",
+// 7.2
+
+// 7.0
+'sig_not_allowed'	=>	"Không điền vào trường này. Nhóm của bạn không được phép sử dụng chữ ký trong bình luận.",
+'related_not_found'	=>	"Không tìm thấy bài viết liên quan trên trang web.",
+'add_err_9'			=>	"Quản trị viên trang web đã đặt giới hạn số lượng bài viết được phép chờ phê duyệt. Số lượng bài viết tối đa đang chờ được quản trị viên xác minh đã được đạt trên trang web. Vui lòng thử thêm bài viết của bạn sau.",
+// 7.0
+
+// 6.7
+'news_delnews'		=>	"Xóa bài viết",
+'news_del_ok'		=>	"Bài viết đã chọn đã được xóa thành công.",
+// 6.7
+
+// 6.5
+'time_heute'		=>	"Hôm nay",
+'time_gestern'		=>	"Hôm qua",
+'thumb_expandtitle'	=>	"Phóng to kích thước đầy đủ",
+'thumb_restore'		=>	"Nhấp để đóng hình ảnh. Nhấp và giữ để di chuyển.",
+'thumb_focustitle'	=>	"Tiêu điểm",
+'thumb_cancel'		=>	"Nhấp để hủy",
+'all_user_news'		=>	"Xem tất cả bài viết của người dùng",
+'show_user_news'	=>	"Tất cả bài viết của người dùng",
+'menu_fnews'		=>	"Tìm tất cả bài viết",
+'reg_next'			=>	"Tiếp tục đăng ký trên trang web",
+'xf_not_notig'		=>	"tùy chọn",
+// 6.5
+
+// 6.3
+'no_limit'			=>	"không giới hạn",
+'title_catalog'		=>	"Danh mục",
+// 6.3
+
+// 6.2
+'s_fsrelate'		=>	"Liên quan nhất",
+// 6.2
+
+// 6.0
+'reload_code' 	    =>   "tải lại, nếu mã không thể nhìn thấy",
+'news_err_31'		=>	"Bình luận của bạn đã được thêm vào cơ sở dữ liệu. Bình luận của bạn sẽ được xuất bản trên trang web sau khi được Quản trị viên xác minh.",
+'bb_t_font'	   		=>	"Phông chữ",
+'bb_t_size'	   		=>	"Kích thước",
+// 6.0
+
+// 5.7
+'mail_news' 	   =>   "Bài viết mới đang chờ phê duyệt",
+'mail_comments'	   =>   "Bình luận mới trên trang web",
+'bb_t_leech'	   =>	"Chèn liên kết được bảo vệ",
+// 5.7
+
+// 5.5
+'s_ffullstart'    =>   "Tìm kiếm nâng cao ",
+'user_logged'     =>    "Bạn đã đăng nhập thành công.",
+// 5.5
+
+// 5.3
+'bb_t_emo'        =>    "Chèn biểu tượng cảm xúc",
+'pm_to'           =>    "Người nhận",
+'approve'         =>    "(Chờ phê duyệt)",
+'ip_info'         =>    " Thông tin địa chỉ IP",
+'ip_tools'        =>    "Tìm kiếm người dùng khác",
+'ip_ban'          =>    "Cấm địa chỉ IP",
+// 5.3
+
+// 5.2
+'bb_t_code'        =>   "Chèn mã nguồn",
+'title_last'	   =>	"Bình luận",
+'title_lost'	   =>	"Khôi phục mật khẩu",
+'title_search'	   =>	"Tìm kiếm trên trang web",
+'bb_t_video'	   =>	"Chèn video",
+'menu_profile' 	   =>	"Xem hồ sơ",
+'menu_fcomments'   =>	"Tìm tất cả bình luận",
+'menu_send'		   =>	"Gửi tin nhắn",
+'menu_uedit'	   =>	"Trung tâm quản trị",
+// 5.2
+
+'fav_notfound'		=>	"Bạn không thêm mục yêu thích",
+'news_err_30'		=>	"Mã bảo mật không chính xác",
+'s_allcat'			=>	"- Tìm kiếm trong tất cả các mục -",
+'s_con'				=>	"Tìm kiếm theo nội dung",
+'s_word'			=>	"Từ khóa:",
+'s_whint'			=>	"Để tìm kiếm theo nhiều <br>chuỗi khác nhau<br> sử dụng biểu thức sau: <br> chuỗi1 HOẶC chuỗi2 HOẶC ...",
+'s_ncom1'			=>	"Tìm kiếm trong bình luận",
+'s_ncall'			=>	"Tìm kiếm trong bài viết và bình luận",
+'s_ncom'			=>	"Tìm kiếm trong bài viết",
+'s_tnews'			=>	"Tìm kiếm trong tiêu đề bài viết",
+'s_nid'				=>	"Tìm kiếm theo số bài viết",
+'s_static'			=>  "Tìm kiếm trong các trang tĩnh",
+'s_mname'			=>	"Tìm kiếm theo tên người dùng",
+'s_fall'			=>	"Tìm kiếm bài viết hoặc bình luận",
+'s_fname'			=>	"Tên người dùng:",
+'s_fgname'			=>	"Tên chính xác",
+'s_fart'			=>	"Tìm bài viết với",
+'s_fmin'			=>	"Không ít hơn",
+'s_fmax'			=>	"Không nhiều hơn",
+'s_wcomm'			=>	"bình luận",
+'s_fdaten'			=>	"Khoảng thời gian",
+'s_tall'			=>	"Trong tất cả thời gian",
+'s_tlast'			=>	"Kể từ lần truy cập cuối cùng",
+'s_tday'			=>	"Một ngày trước",
+'s_tweek'			=>	"Một tuần trước",
+'s_ttweek'			=>	"2 tuần trước",
+'s_tmoth'			=>	"Một tháng trước",
+'s_tfmoth'			=>	"3 tháng trước",
+'s_tsmoth'			=>	"6 tháng trước",
+'s_tyear'			=>	"Một năm trước",
+'s_fnew'			=>	"và sau",
+'s_falt'			=>	"và trước",
+'s_fsoft'			=>	"Sắp xếp kết quả tìm kiếm theo",
+'s_fsdate'			=>	"Ngày bài viết hoặc bình luận",
+'s_fstitle'			=>	"Tiêu đề bài viết",
+'s_fscnum'			=>	"Số lượng bình luận",
+'s_fsnnum'			=>	"Số lượng lượt xem",
+'s_fsaut'			=>	"Tên tác giả",
+'s_fscat'			=>	"Chuyên mục",
+'s_fsrate'			=>	"Đánh giá bài viết",
+'s_fsdesc'			=>	"Giảm dần",
+'s_fsasc'			=>	"Tăng dần",
+'s_vlegend'			=>	"Hiển thị kết quả dưới dạng",
+'s_vnum'			=>	"Kết quả mỗi trang:",
+'s_vwie'			=>	"Kết quả tìm kiếm dưới dạng",
+'s_vjump'			=>	"Hiển thị kết quả №:",
+'s_vnews'			=>	"Bài viết",
+'s_vtitle'			=>	"Tiêu đề",
+'s_fcats'			=>	"Tìm kiếm theo chuyên mục",
+'s_fstart'			=>	"Bắt đầu tìm kiếm",
+'s_fstop'			=>	"Dừng",
+'s_freset'			=>	"Đặt lại",
+'static_denied'		=>	"Bạn không có quyền xem trang đã chọn.",
+'i_quote'			=>	"Trích dẫn:",
+'feed_error'		=>	"Thành viên của \"<b>{group}</b>\" chỉ được phép sử dụng phản hồi để liên hệ với Quản trị viên trang web.",
+'search_denied'		=>	"Các thành viên của \"<b>{group}</b>\" không thể sử dụng tính năng tìm kiếm.",
+'news_err_id'		=>	"ID bài viết chưa được đặt.",
+'comm_req_f'		=>	"Vui lòng điền vào tất cả các trường bắt buộc",
+'ip_block_login'	=>	"Cảnh báo! Bạn đã bật chặn tự động IP cho tài khoản của mình. Truy cập vào tài khoản của bạn bị cấm từ subnet này.",
+'mod_list_f'		=>	"Danh sách bài viết của bạn đang chờ phê duyệt là trống",
+'ip_block'         =>	"Địa chỉ IP hoặc subnet của bạn đã bị Quản trị viên chặn",
+'pm_alert'         =>	"Thân gửi <b>{user}</b>, bạn đã nhận được <b>{num}</b> tin nhắn cá nhân mới kể từ lần truy cập cuối cùng của bạn.",
+'pm_asub'          =>	"Chủ đề:",
+'pm_atitle'        =>	"Bạn đã nhận được tin nhắn cá nhân",
+'pm_mtitle'        =>	"Nhấp và giữ để di chuyển cửa sổ",
+'pm_aread'         =>	"Đọc tin nhắn",
+'pm_close'         =>	"Đóng cửa sổ",
+'att_dcount'       =>	"Lượt tải xuống:",
+'att_denied'       =>	"Bạn không thể tải xuống tệp từ máy chủ của chúng tôi",
+
+'banned_info'      =>	"Vô thời hạn.",
+'fav_error'        =>	"Mục này chỉ có sẵn cho người dùng đã đăng ký.",
+
+'aj_allowbr'       =>	"Tự động ngắt dòng",
+'pm_selall'        =>	"Chọn tất cả",
+'b_del'       	   =>	"Xóa đã chọn",
+'last_comm'        =>	"Bình luận mới nhất",
+'err_last'         =>	"Không có bình luận",
+
+'top_name'         =>	"Tên",
+'top_status'       =>	"Nhóm",
+'top_reg'          =>	"Đăng ký",
+'top_last'          =>	"Lần truy cập cuối cùng",
+'top_nnum'          =>	"Số lượng bài viết",
+'top_cnum'          =>	"Số lượng bình luận",
+'top_pm'          =>	"Tin nhắn cá nhân",
+
+'ajax_info'    	   =>	"Đang tải. Vui lòng chờ...",
+'menu_short'   	   =>	"Chỉnh sửa nhanh",
+'menu_full'        =>	"Chỉnh sửa đầy đủ",
+
+
+'addnews_allow_rate'    =>	"Cho phép đánh giá bài viết",
+'sec_image'  		    =>	"Bật hình ảnh này để hiển thị mã bảo mật",
+'reg_err_19'            =>  "<li>Mã bảo mật không chính xác</li>",
+'reg_err_20'			=>	"Tên này đã được đăng ký. Vui lòng thử tên khác.",
+'reg_ok_ajax'			=>	"Bạn có thể sử dụng tên này để đăng ký",
+
+'news_page_err'		=>	"Xin lỗi, trang này không có sẵn cho bạn. Có thể địa chỉ của nó đã thay đổi hoặc nó đã bị xóa. Vui lòng sử dụng tìm kiếm.",
+'bb_t_up'			=>	"Tải lên tệp và hình ảnh",
+'bb_b_up'			=>	"Đang tải lên",
+'next_moth'			=>	"Tháng sau",
+'prev_moth'			=>	"Tháng trước",
+'cal_post'			=>	"Tất cả bài viết cho",
+'title_users'		=>	"Người dùng",
+'title_new'			=>	"Chưa đọc",
+'title_date'		=>	"Tài liệu cho",
+'title_stats'		=>	"Thống kê trang web",
+'title_addnews'		=>	"Thêm bài viết",
+'title_register'	=>	"Đăng ký",
+'title_fav'			=>	"Mục yêu thích của tôi",
+'title_pm'			=>	"Tin nhắn cá nhân",
+'title_feed'		=>	"Liên hệ với chúng tôi",
+'title_year'		=>	"năm",
+'title_year1'		=>	"năm",
+'vote_set'			=>	"Bỏ phiếu",
+'vote_result'		=>	"Kết quả",
+'poll_failed'		=>	"Bạn phải chọn ít nhất một tùy chọn trong cuộc bỏ phiếu này",
+
+'excellent'		=>	"Tuyệt vời",
+'good'			=>	"Tốt",
+'fair'			=>	"Bình thường",
+'poor'			=>	"Kém",
+'useless'		=>	"Vô ích",
+'rated'			=>	"Đánh giá bài viết:",
+'voten'			=>	"tổng số phiếu bầu:",
+'yrate'			=>	"Đánh giá của bạn:",
+'entrat'		=>	"Đánh giá",
+'unorat'		=>	"chưa có đánh giá",
+'urated'		=>	"Đánh giá của người dùng",
+
+'templ_err_1'	=>	"Mẫu",
+'templ_err_2'	=>	"không tồn tại! Vui lòng kiểm tra chính tả!",
+
+'all_info'		=>	"Thông tin",
+'all_prev'		=>	"Quay lại",
+'all_err'		=>	"Trình duyệt của bạn không hỗ trợ Javascript. Đề xuất bật hỗ trợ này.",
+'all_err_1'		=>	"Cảnh báo! Đã phát hiện lỗi",
+
+'reg_err_1'		=>	"<li>Cả hai mật khẩu phải giống nhau!</li>",
+'reg_err_2'		=>	"<li>Mật khẩu phải từ 6 đến 72 ký tự!</li>",
+'reg_err_3'		=>	"<li>Độ dài tên không hợp lệ. Tên người dùng phải từ 3 đến 30 ký tự!</li>",
+'reg_err_4'		=>	"<li>Bạn đang sử dụng tên không hợp lệ!</li>",
+'reg_err_5'		=>	"<li>Bạn đang sử dụng mật khẩu không hợp lệ!</li>",
+'reg_err_6'		=>	"<li>Email không hợp lệ!</li>",
+'reg_err_7'		=>	"Tên người dùng không thể trống!",
+'reg_err_8'		=>	"<li>Người dùng với tên người dùng và email này đã được đăng ký!</li>",
+'reg_err_9'		=>	"Quản trị viên trang web đã tắt đăng ký trên trang web.",
+'reg_err_10'	=>	"Số lượng người dùng tối đa đã được đăng ký trên trang web. Vui lòng thử đăng ký sau.",
+'reg_err_11'	=>	"Lỗi đăng ký",
+'reg_err_12'	=>	"<li>Lỗi tải lên hình đại diện!</li>",
+'reg_err_13'	=>	"<li>Chỉ có các tệp hình ảnh JPG hoặc PNG được phép!</li>",
+'reg_err_14'	=>	"<li>Thông tin cá nhân quá dài!</li>",
+'reg_err_15'	=>	"<li>Tên quá dài!</li>",
+'reg_err_16'	=>	"<li>Không có quốc gia nào với tên này!</li>",
+'reg_err_18'	=>	"Cảnh báo! Đã phát hiện lỗi",
+'reg_ok'		=>	"Đăng ký hoàn tất!",
+'reg_ok_1'		=>	"Cảm ơn bạn đã đăng ký trên trang web của chúng tôi! Bạn có thể đăng nhập bằng tên người dùng và mật khẩu của mình.",
+
+'reg_subj'		=>	"Kích hoạt tài khoản",
+'reg_vhead'		=>	"Yêu cầu kích hoạt đã được gửi",
+'reg_vtext'		=>	"Yêu cầu đăng ký đã được chấp nhận.<br><br>Quản trị viên trang web yêu cầu xác minh tất cả địa chỉ email. Bạn sẽ nhận được email với hướng dẫn cho bước tiếp theo trong 10 phút (có thể sớm hơn). Nếu bạn không nhận được xác nhận trong khoảng thời gian này, rất có thể, nó đã rơi vào thư mục spam. Vui lòng kiểm tra nội dung của thư mục này. Nếu không, hãy thử lại bằng địa chỉ email khác hoặc liên hệ với Quản trị viên trang web.",
+
+'add_err_1'		=>	"<li>Tiêu đề không thể trống</li>",
+'add_err_2'		=>	"<li>Tiêu đề quá dài</li>",
+'xfield_xerr1'	=>	"<li>Bạn phải hoàn thành tất cả các trường bắt buộc.</li>",
+'add_err_5'		=>	"<li>Bạn phải điền vào trường tóm tắt bài viết</li>",
+'add_err_6'		=>	"Cảnh báo! Đã phát hiện lỗi",
+'add_err_7'		=>	"Tiêu đề là trường bắt buộc",
+'add_err_8'		=>	"Xin lỗi, bạn không có quyền đăng bài viết.",
+'add_ok'		=>	"Bài viết đã được thêm",
+'add_ok_1'		=>	"Bài viết của bạn đã được thêm vào cơ sở dữ liệu thành công.",
+'add_ok_2'		=>	"Bài viết của bạn đã được thêm vào cơ sở dữ liệu thành công. Nó sẽ được xuất bản trên trang web sau khi được Quản trị viên xác minh.",
+'add_ok_3'		=>	"Bài viết của bạn đã được thêm vào cơ sở dữ liệu thành công. Nhưng bạn không được phép xuất bản bài viết trong bất kỳ phần nào mà không cần phê duyệt, do đó bài viết của bạn sẽ được xuất bản sau khi được Quản trị viên xác minh.",
+'add_noch'		=>	"Thêm nhiều hơn",
+'add_or'		=>	"hoặc",
+'add_al_com'	=>	"Cho phép bình luận",
+'add_al_m'		=>	"Xuất bản trên Trang chủ",
+'add_al_ap'		=>	"Xuất bản trên trang web",
+'add_al_fix'	=>	"Ghim trên trang web",
+
+'bb_url'			=>	"Nhập URL đầy đủ của liên kết",
+'bb_page'			=>	"Nhập số trang",
+'bb_url_name'		=>	"Nhập mô tả của liên kết",
+'bb_page_name'		=>	"Nhập mô tả của liên kết",
+'bb_image'			=>	"Nhập URL đầy đủ của hình ảnh",
+'bb_email'			=>	"Nhập email",
+'bb_code'			=>	"Ví dụ: [CODE] mã của bạn ở đây.. [/CODE]",
+'bb_quote'			=>	"Ví dụ: [QUOTE] trích dẫn của bạn ở đây.. [/QUOTE]",
+'bb_no_url'			=>	"Bạn phải nhập URL ",
+'bb_no_title'		=>	"Bạn phải nhập tiêu đề",
+'bb_no_email'		=>	"Bạn phải nhập địa chỉ email",
+'bb_prompt_start'	=>	"Nhập văn bản để được định dạng",
+'bb_img_title'		=>	"Nhập cạnh mà hình ảnh sẽ được căn chỉnh (trái, giữa, phải)",
+'bb_email_title'	=>	"Nhập mô tả của liên kết",
+'bb_b_quote'		=>	"Trích dẫn ",
+'bb_bb_page'		=>	"Trang",
+'bb_b_close'		=>	"Đóng tất cả",
+'bb_b_url'			=>	"Liên kết",
+'bb_b_img'			=>	"Hình ảnh",
+'bb_b_mail'			=>	"email",
+'bb_b_break'		=>	"Ngắt",
+'bb_b_page'			=>	"Liên kết đến trang",
+'bb_t_b'			=>	"Đậm",
+'bb_t_i'			=>	"In nghiêng",
+'bb_t_u'			=>	"Gạch chân",
+'bb_t_s'			=>	"Gạch ngang",
+'bb_t_l'			=>	"Căn trái",
+'bb_t_c'			=>	"Căn giữa",
+'bb_t_r'			=>	"Căn phải",
+'bb_t_cl'			=>	"Đóng tất cả các thẻ mở",
+'bb_t_url'			=>	"Chèn liên kết",
+'bb_t_img'			=>	"Chèn hình ảnh",
+'bb_t_hide'			=>	"Văn bản ẩn",
+'bb_t_quote'		=>	"Chèn trích dẫn",
+'bb_t_translit'		=>	"Chuyển đổi văn bản đã chọn từ chữ viết la tinh sang chữ viết Cyrillic ",
+'bb_t_m'			=>	"Chèn email",
+'bb_t_br'			=>	"Chèn ngắt trang",
+'bb_t_p'			=>	"Chèn liên kết đến trang",
+'bb_b_cancel'		=>	"Hủy bỏ",
+'bb_t_cancel'		=>	"Hủy chỉnh sửa và trả lại mọi thứ về trạng thái ban đầu",
+'bb_b_apply'		=>	"Chấp nhận sửa đổi",
+'bb_t_apply'		=>	"Gửi sửa đổi lên máy chủ",
+
+'comm_err_1'		=>	"Chỉ người dùng đã đăng ký mới được phép làm việc với bình luận",
+'comm_err_2'		=>	"Cảnh báo! Đã phát hiện lỗi",
+'comm_err_3'		=>	"Bạn không có quyền chỉnh sửa bình luận.",
+'comm_err_4'		=>	"Bạn không có quyền xóa bình luận đã chọn.",
+'comm_err_5'		=>	"Hành động không được xác định hoặc bình luận chưa được chọn.",
+
+'comm_ok'			=>	"Hành động hoàn tất thành công ",
+'comm_ok_1'			=>	"Bình luận đã được cập nhật thành công ",
+'comm_ok_2'			=>	"Bình luận đã được xóa thành công.",
+'comm_title'		=>	"Chỉnh sửa bình luận",
+
+'login_err'			=>	"Lỗi xác thực",
+'login_err_1'		=>	"Cảnh báo! Đăng nhập không thành công. Có thể bạn đã nhập sai tên người dùng hoặc mật khẩu.",
+
+'search_err_2'		=>	"Thật không may, tìm kiếm trang web không mang lại kết quả nào. Thử thay đổi hoặc rút ngắn yêu cầu của bạn. ",
+'search_err_3'		=>	"Tìm kiếm bị tạm dừng! Chuỗi tìm kiếm trống hoặc chứa ít hơn 4 ký tự.",
+'search_ok'			=>	"Đã tìm thấy",
+'search_ok_1'		=>	"phản hồi",
+'search_ok_2'		=>	"Kết quả truy vấn",
+'search_title'		=>	"Tìm kiếm trên trang web",
+
+'lost_npass'		=>	"Thân gửi khách truy cập! Một mật khẩu mới đã được tạo theo yêu cầu của bạn. Sử dụng thông tin sau để đăng nhập vào trang web:",
+'lost_login'		=>	"Đăng nhập:",
+'lost_pass'			=>	"Mật khẩu:",
+'lost_info'			=>	"Bạn có thể thay đổi mật khẩu của mình khi đăng nhập vào trang web.",
+'lost_gen'			=>	"Mật khẩu mới đã được tạo",
+'lost_err'			=>	"Người dùng với tên người dùng này không yêu cầu khôi phục mật khẩu hoặc liên kết này đã lỗi thời. Chỉ một lần khôi phục mật khẩu bằng liên kết bạn nhận được trên email của mình được phép. Sau đó, bạn cần yêu cầu khôi phục mật khẩu lại.",
+'lost_subj'			=>	"Khôi phục mật khẩu",
+'lost_ms'			=>	"Thông báo đã được gửi",
+'lost_ms_1'			=>	"Thân gửi người dùng! Chúng tôi không thể khôi phục mật khẩu cũ của bạn vì tất cả mật khẩu đều được mã hóa vì lý do bảo mật. Thông báo về việc tạo mật khẩu mới đã được gửi đến địa chỉ email của bạn.",
+'lost_err_1'		=>	"Không tìm thấy người dùng với tên người dùng hoặc email này trong cơ sở dữ liệu",
+
+'news_err_1'		=>	"Tên quá dài.",
+'news_err_2'		=>	"Email quá dài.",
+'news_err_3'		=>	"Bình luận quá dài.",
+'news_err_4'		=>	"Bảo vệ chống spam được bật.",
+'news_err_5'		=>	"Bạn chỉ có thể thêm bình luận cho bài viết này sau",
+'news_err_6'		=>	"giây",
+'news_err_7'		=>	"<li>Xin lỗi, nhưng bạn đã nhập tên hoặc email của người dùng đã đăng ký. Nếu bạn là người dùng này, bạn cần đăng nhập vào bảng điều khiển.</li>",
+'news_err_9'		=>	"Trường \"Tên\" là bắt buộc và không thể để trống.",
+'news_err_10'		=>	"Địa chỉ email không hợp lệ.",
+'news_err_11'		=>	"Trường \"Bình luận\" là bắt buộc và không thể để trống.",
+'news_err_12'		=>	"Thật không may, trang này không có sẵn cho bạn. Có thể địa chỉ của nó đã thay đổi hoặc nó đã bị xóa. Vui lòng sử dụng tìm kiếm.",
+'news_err_13'		=>	"<li>Bạn không có quyền chỉnh sửa hồ sơ này!</li>",
+'news_err_14'		=>	"<li>Đã xảy ra lỗi trong quá trình tải lên hình ảnh.</li>",
+'news_err_15'		=>	"<li>Chỉ các tệp hình ảnh JPG, PNG, GIF, BMP hoặc WebP được phép tải lên.</li>",
+'news_err_16'		=>	"<li>Kích thước tối đa của hình ảnh tải lên không được vượt quá {size} Kb.</li>",
+'news_err_17'		=>	"<li>Mật khẩu cũ không hợp lệ!</li>",
+'news_err_18'		=>	"<li>Cả hai mật khẩu phải giống nhau!</li>",
+'news_err_19'		=>	"<li>Mật khẩu phải từ 6 đến 72 ký tự!</li>",
+'news_err_20'		=>	"<li>Bạn đang sử dụng mật khẩu không hợp lệ!</li>",
+'news_err_21'		=>	"<li>Địa chỉ email không hợp lệ!</li>",
+'news_err_22'		=>	"<li>Thông tin cá nhân quá dài!</li>",
+'news_err_23'		=>	"<li>Tên quá dài!</li>",
+'news_err_24'		=>	"<li>Không có quốc gia nào với tên này!</li>",
+'news_err_26'		=>	"Không tìm thấy người dùng này.",
+'news_err_27'		=>	"Các bài viết tại địa chỉ trang web này không được tìm thấy hoặc bạn không có quyền xem thông tin tại địa chỉ này.",
+'news_err_28'		=>	"không có quyền cần thiết để xem các bài viết trong phần này.",
+'news_err_29'		=>	"Không được phép thêm bình luận cho bài viết này.",
+
+'feed_err_1'		=>	"<li>Tên người dùng không hợp lệ.</li>",
+'feed_err_2'		=>	"<li>Email không hợp lệ.</li>",
+'feed_err_3'		=>	"<li>Email không hợp lệ.</li>",
+'feed_err_4'		=>	"<li>Bạn chưa nhập chủ đề của tin nhắn.</li>",
+'feed_err_5'		=>	"<li>Bạn chưa nhập nội dung của tin nhắn.</li>",
+'feed_err_6'		=>	"Không thể gửi tin nhắn của bạn.",
+'feed_err_7'		=>	"Người dùng này không được tìm thấy trong cơ sở dữ liệu hoặc họ không muốn nhận email từ người dùng khác",
+
+'feed_ok_1'			=>	"Tin nhắn đã được gửi thành công",
+'feed_ok_2'			=>	"Tin nhắn của bạn đã được gửi thành công.",
+'feed_ok_4'			=>	"Quay lại Trang chủ.",
+
+'user_mem'			=>	"Khách",
+'user_ed'			=>	"Phóng viên",
+'user_re'			=>	"Biên tập viên",
+'user_adm'			=>	"Quản trị viên",
+'user_ban'			=>	"Đã cấm",
+
+'news_next'			=>	"Tiếp theo",
+'news_prev'			=>	"Trước",
+'news_site'			=>	"Trang",
+'news_iz'			=>	" của ",
+'news_delcom'		=>	"Bạn có chắc chắn muốn xóa nó không? Hành động này không thể hoàn tác",
+'news_regus'		=>	"Cảnh báo! Bạn không được phép xem văn bản này.",
+'news_info_1'		=>	"Người dùng của <b>{group}</b> không được phép bình luận về bài viết này.",
+'news_mail'			=>	"gửi email",
+'news_nomail'		=>	"ẩn khỏi chế độ xem",
+'news_noamail'		=>	"Không nhận email từ người dùng khác",
+'news_option'		=>	"chỉnh sửa hồ sơ",
+'news_addfav'		=>	"Thêm vào mục yêu thích của tôi ",
+'news_minfav'		=>	"Xóa khỏi mục yêu thích của tôi",
+'news_addcom'		=>	"Thêm bình luận",
+'news_pmnew'		=>	"Viết tin nhắn cá nhân",
+
+'pm_err_1'			=>	"Thật không may, bạn không được phép sử dụng tin nhắn cá nhân trên trang web",
+'pm_err_2'			=>	"<li>Tất cả các trường đều bắt buộc</li>",
+'pm_err_3'			=>	"<li>Chủ đề tin nhắn quá dài</li>",
+'pm_err_4'			=>	"<li>Không tìm thấy người nhận với tên này</li>",
+'pm_err_8'			=>	"<li>Người nhận này không thể nhận tin nhắn cá nhân. Số lượng tin nhắn cá nhân của người nhận đã đạt giá trị tối đa.</li>",
+'pm_err_5'			=>	"Tin nhắn cá nhân chưa được xóa. Bạn chưa chọn hoặc bạn không có quyền làm điều đó.",
+'pm_err_6'			=>	"Không tìm thấy tin nhắn có số này",
+'pm_err_7'			=>	"Bạn không được phép xem tin nhắn cá nhân của người dùng khác ",
+'pm_err_9'			=>	"Hộp thư của bạn đã đạt đến số lượng tin nhắn nhận tối đa. Bạn không thể nhận thêm tin nhắn cá nhân cho đến khi bạn xóa các tin nhắn không cần thiết ",
+
+'pm_sendok'			=>	"Tin nhắn của bạn đã được gửi thành công.",
+'pm_confirm'		=>	"Bạn có chắc chắn muốn xóa tin nhắn này không?",
+'pm_noch'			=>	"Gửi thêm",
+'pm_main'			=>	"trở lại Trang chủ ",
+'pm_or'				=>	"hoặc",
+'pm_delok'			=>	"Các tin nhắn đã chọn đã được xóa thành công.",
+'pm_subj'			=>	"Chủ đề của tin nhắn",
+'pm_from'			=>	"Người gửi",
+'pm_date'			=>	"Ngày",
+'pm_action'			=>	"Hành động?",
+'pm_del'			=>	"xóa",
+
+);
+
+$langtimezones = array(
+);
+
+$langdate = array (
+'January'		=>	"Tháng Một",
+'February'		=>	"Tháng Hai",
+'March'			=>	"Tháng Ba",
+'April'			=>	"Tháng Tư",
+'May'			=>	"Tháng Năm",
+'June'			=>	"Tháng Sáu",
+'July'			=>	"Tháng Bảy",
+'August'		=>	"Tháng Tám",
+'September'		=>	"Tháng Chín",
+'October'		=>	"Tháng Mười",
+'November'		=>	"Tháng Mười Một",
+'December'		=>	"Tháng Mười Hai",
+'Jan'		=>	"Thg 1",
+'Feb'		=>	"Thg 2",
+'Mar'		=>	"Thg 3",
+'Apr'		=>	"Thg 4",
+'Jun'		=>	"Thg 6",
+'Jul'		=>	"Thg 7",
+'Aug'		=>	"Thg 8",
+'Sep'		=>	"Thg 9",
+'Oct'		=>	"Thg 10",
+'Nov'		=>	"Thg 11",
+'Dec'		=>	"Thg 12",
+
+'Sunday'	=>	"Chủ Nhật",
+'Monday'	=>	"Thứ Hai",
+'Tuesday'	=>	"Thứ Ba",
+'Wednesday'	=>	"Thứ Tư",
+'Thursday'	=>	"Thứ Năm",
+'Friday'	=>	"Thứ Sáu",
+'Saturday'	=>	"Thứ Bảy",
+
+'Sun'	=>	"CN",
+'Mon'	=>	"Th 2",
+'Tue'	=>	"Th 3",
+'Wed'	=>	"Th 4",
+'Thu'	=>	"Th 5",
+'Fri'	=>	"Th 6",
+'Sat'	=>	"Th 7",
+
+);
+
+
+
+$customlangdate = array (
+'January'		=>	"Tháng Một",
+'February'		=>	"Tháng Hai",
+'March'			=>	"Tháng Ba",
+'April'			=>	"Tháng Tư",
+'May'			=>	"Tháng Năm",
+'June'			=>	"Tháng Sáu",
+'July'			=>	"Tháng Bảy",
+'August'		=>	"Tháng Tám",
+'September'		=>	"Tháng Chín",
+'October'		=>	"Tháng Mười",
+'November'		=>	"Tháng Mười Một",
+'December'		=>	"Tháng Mười Hai",
+'Jan'		=>	"Thg 1",
+'Feb'		=>	"Thg 2",
+'Mar'		=>	"Thg 3",
+'Apr'		=>	"Thg 4",
+'Jun'		=>	"Thg 6",
+'Jul'		=>	"Thg 7",
+'Aug'		=>	"Thg 8",
+'Sep'		=>	"Thg 9",
+'Oct'		=>	"Thg 10",
+'Nov'		=>	"Thg 11",
+'Dec'		=>	"Thg 12",
+
+'Sunday'	=>	"Chủ Nhật",
+'Monday'	=>	"Thứ Hai",
+'Tuesday'	=>	"Thứ Ba",
+'Wednesday'	=>	"Thứ Tư",
+'Thursday'	=>	"Thứ Năm",
+'Friday'	=>	"Thứ Sáu",
+'Saturday'	=>	"Thứ Bảy",
+
+'Sun'	=>	"CN",
+'Mon'	=>	"Th 2",
+'Tue'	=>	"Th 3",
+'Wed'	=>	"Th 4",
+'Thu'	=>	"Th 5",
+'Fri'	=>	"Th 6",
+'Sat'	=>	"Th 7",
+
+);
+
+$langcommentsweekdays = array(
+'Sunday'    =>    "Chủ Nhật",
+'Monday'    =>    "Thứ Hai",
+'Tuesday'   =>    "Thứ Ba",
+'Wednesday' =>    "Thứ Tư",
+'Thursday'  =>    "Thứ Năm",
+'Friday'    =>    "Thứ Sáu",
+'Saturday'  =>    "Thứ Bảy"
+);
+
+
+$f  = array('Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai');
+$r  = array('Tháng Một', 'Tháng Hai', 'Tháng Ba', 'Tháng Tư', 'Tháng Năm', 'Tháng Sáu', 'Tháng Bảy', 'Tháng Tám', 'Tháng Chín', 'Tháng Mười', 'Tháng Mười Một', 'Tháng Mười Hai');
+$langdateshortweekdays = array("CN","Th 2","Th 3","Th 4","Th 5","Th 6","Th 7");
+
+
+$langtranslit = array(
+'а' => 'a', 'б' => 'b', 'в' => 'v',
+'г' => 'g', 'д' => 'd', 'е' => 'e',
+'ё' => 'e', 'ж' => 'zh', 'з' => 'z',
+'и' => 'i', 'й' => 'y', 'к' => 'k',
+'л' => 'l', 'м' => 'm', 'н' => 'n',
+'о' => 'o', 'п' => 'p', 'р' => 'r',
+'с' => 's', 'т' => 't', 'у' => 'u',
+'ф' => 'f', 'х' => 'h', 'ц' => 'c',
+'ч' => 'ch', 'ш' => 'sh', 'щ' => 'sch',
+'ь' => '', 'ы' => 'y', 'ъ' => '',
+'э' => 'e', 'ю' => 'yu', 'я' => 'ya',
+"ї" => "yi", "є" => "ye",
+
+'А' => 'A', 'Б' => 'B', 'В' => 'V',
+'Г' => 'G', 'Д' => 'D', 'Е' => 'E',
+'Ё' => 'E', 'Ж' => 'Zh', 'З' => 'Z',
+'И' => 'I', 'Й' => 'Y', 'К' => 'K',
+'Л' => 'L', 'М' => 'M', 'Н' => 'N',
+'О' => 'O', 'П' => 'P', 'Р' => 'R',
+'С' => 'S', 'Т' => 'T', 'У' => 'U',
+'Ф' => 'F', 'Х' => 'H', 'Ц' => 'C',
+'Ч' => 'Ch', 'Ш' => 'Sh', 'Щ' => 'Sch',
+'Ь' => '', 'Ы' => 'Y', 'Ъ' => '',
+'Э' => 'E', 'Ю' => 'Yu', 'Я' => 'Ya',
+"Ї" => "yi", "Є" => "ye", 
+"À"=>"A", "à"=>"a", "Á"=>"A", "á"=>"a", 
+"Â"=>"A", "â"=>"a", "Ä"=>"A", "ä"=>"a", 
+"Ã"=>"A", "ã"=>"a", "Å"=>"A", "å"=>"a", 
+"Æ"=>"AE", "æ"=>"ae", "Ç"=>"C", "ç"=>"c", 
+"Ð"=>"D", "È"=>"E", "è"=>"e", "É"=>"E", 
+"é"=>"e", "Ê"=>"E", "ê"=>"e", "Ì"=>"I", 
+"ì"=>"i", "Í"=>"I", "í"=>"i", "Î"=>"I", 
+"î"=>"i", "Ï"=>"I", "ï"=>"i", "Ñ"=>"N", 
+"ñ"=>"n", "Ò"=>"O", "ò"=>"o", "Ó"=>"O", 
+"ó"=>"o", "Ô"=>"O", "ô"=>"o", "Ö"=>"O", 
+"ö"=>"o", "Õ"=>"O", "õ"=>"o", "Ø"=>"O", 
+"ø"=>"o", "Œ"=>"OE", "œ"=>"oe", "Š"=>"S", 
+"š"=>"s", "Ù"=>"U", "ù"=>"u", "Û"=>"U", 
+"û"=>"u", "Ú"=>"U", "ú"=>"u", "Ü"=>"U", 
+"ü"=>"u", "Ý"=>"Y", "ý"=>"y", "Ÿ"=>"Y", 
+"ÿ"=>"y", "Ž"=>"Z", "ž"=>"z", "Þ"=>"B", 
+"þ"=>"b", "ß"=>"ss", "£"=>"pf", "¥"=>"ien", 
+"ð"=>"eth", "ѓ"=>"r"
+);
+
+$relates_word = array ('e' => '[eеё]', 'r' => '[rг]', 't' => '[tт]', 'y' => '[yу]','u' => '[uи]','i' => '[i1l!]','o' => '[oо0]','p' => '[pр]','a' => '[aа]','s' => '[s5]','w' => 'w','q' => 'q','d' => 'd','f' => 'f','g' => '[gд]','h' => '[hн]','j' => 'j','k' => '[kк]','l' => '[l1i!]','z' => 'z','x' => '[xх%]','c' => '[cс]','v' => '[vuи]','b' => '[bвь]','n' => '[nпл]','m' => '[mм]','й' => '[йиu]','ц' => 'ц','у' => '[уy]','е' => '[еeё]','н' => '[нh]','г' => '[гr]','ш' => '[шwщ]','щ' => '[щwш]','з' => '[з3э]','х' => '[хx%]','ъ' => '[ъь]','ф' => 'ф','ы' => '(ы|ь[i1l!]?)','в' => '[вb]','а' => '[аa]','п' => '[пn]','р' => '[рp]','о' => '[оo0]','л' => '[лn]','д' => 'д','ж' => 'ж','э' => '[э3з]','я' => '[я]','ч' => '[ч4]','с' => '[сc]','м' => '[мm]','и' => '[иuй]','т' => '[тt]','ь' => '[ьb]','б' => '[б6]','ю' => '(ю|[!1il][oо0])','ё' => '[ёеe]','1' => '[1il!]','2' => '2','3' => '[3зэ]','4' => '[4ч]','5' => '[5s]','6' => '[6б]','7' => '7','8' => '8','9' => '9','0' => '[0оo]','_' => '_','#' => '#','%' => '[%x]','^' => '[^~]','(' => '[(]',')' => '[)]','=' => '=','.' => '[.]','-' => '-','[' => '[\[]');
+
+?>
+
