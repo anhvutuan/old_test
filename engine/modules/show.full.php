@@ -124,7 +124,7 @@ if( !defined('DATALIFEENGINE') ) {
 			if( count( $cat_list ) == 1 ) {
 					
 				if( $allow_list[0] != "all" AND !in_array( $cat_list[0], $allow_list ) ) $perm = 0;
-	
+
 				if( $not_allow_cats[0] != "" AND in_array( $cat_list[0], $not_allow_cats ) ) $perm = 0;
 					
 				if( isset($cat_info[$cat_list[0]]['id']) AND $cat_info[$cat_list[0]]['id'] ) {
@@ -1351,7 +1351,7 @@ HTML;
 								$cats_url = get_url( $related['category'] );
 								
 								if( $cats_url ) $cats_url .= "/";
-			
+	
 								$rel_full_link = $config['http_home_url'] . $cats_url . $related['id'] . "-" . $related['alt_name'] . ".html";
 							
 							} else {
