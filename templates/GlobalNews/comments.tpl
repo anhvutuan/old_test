@@ -19,7 +19,12 @@
 			[rating-minus]<span><span class="fas fa-minus-circle"></span></span> {dislikes}[/rating-minus]
 		</div>[/rating-type-4]
 	</div>
-	<div class="comment-item__main full-text clearfix">{comment}</div>
+	<form method="post" action="">
+		<input type="hidden" name="csrf_token" value="{csrf_token}">
+		<!-- Các trường form khác -->
+		<textarea name="comment" placeholder="Your comment"></textarea>
+		<button type="submit">Submit Comment</button>
+	</form>
 	[images]<div class="signature">--------------------</div><div class="clearfix">{images}</div>[/images]
 	[signature]<div class="signature">--------------------<br>{signature}</div>[/signature]
 	<div class="comment-item__footer d-flex ai-center">

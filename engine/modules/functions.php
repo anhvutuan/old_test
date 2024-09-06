@@ -2752,7 +2752,7 @@ function create_keywords($story) {
 	if( dle_strlen( $metatags['description'], $config['charset'] ) > 300 ) {
 		
 		$metatags['description'] = dle_substr( $story, 0, 300, $config['charset'] );
-	
+
 		if( ($temp_dmax = dle_strrpos( $metatags['description'], ' ', $config['charset'] )) ) $metatags['description'] = dle_substr( $metatags['description'], 0, $temp_dmax, $config['charset'] );
 
 	}
@@ -3223,7 +3223,6 @@ function build_js($js, $config) {
 	$js_array = array();
 	$extra_js_array = array();
 	$return_js = '';
-	
 	$i=0;
 	$defer = "";
 	

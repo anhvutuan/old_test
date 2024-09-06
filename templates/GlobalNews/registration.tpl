@@ -20,7 +20,7 @@ however, information about you is incomplete, so please fill in the additional f
 		{* Existing form fields *}
 		
 		{* Add CSRF token field *}
-		<input type="hidden" name="csrf_token" value="{$csrf_token}">
+		<input type="hidden" name="csrf_token" value="{csrf_token}">
 		
 		<div class="form__row">
 			<div class="form__caption">
