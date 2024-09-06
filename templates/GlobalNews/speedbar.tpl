@@ -1,1 +1,0 @@
-<div class="speedb"><i class="fas fa-home me-1"></i> {speedbar}</div>
